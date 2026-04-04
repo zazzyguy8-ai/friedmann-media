@@ -40,26 +40,47 @@ export default function SignupPage() {
 
     const supabase = createBrowserClient()
 
-    // Sign up
-    const { error: signUpError } = await supabase.auth.signUp({ email, password })
+    // Race signup against a timeout
+    const signUpPromise = supabase.auth.signUp({ email, password })
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Request timed out. Please try again.')), 10000)
+    )
 
-    if (signUpError) {
-      setErrors({ global: signUpError.message })
+    let signUpResult
+    try {
+      signUpResult = await Promise.race([signUpPromise, timeoutPromise])
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong'
+      setErrors({ global: message })
       setLoading(false)
       return
     }
 
-    // Sign in immediately so session is active
+    if (signUpResult.error) {
+      // If user already exists, try signing in directly
+      if (signUpResult.error.message.includes('already registered')) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+        if (!signInError) {
+          router.push('/onboarding')
+          return
+        }
+      }
+      setErrors({ global: signUpResult.error.message })
+      setLoading(false)
+      return
+    }
+
+    // Try to sign in immediately
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (signInError) {
-      setErrors({ global: 'Account created! Please log in.' })
-      setLoading(false)
-      router.push('/login')
+    if (!signInError) {
+      router.push('/onboarding')
       return
     }
 
-    router.push('/onboarding')
+    // If sign in fails (email not confirmed), send to login with message
+    setErrors({ global: 'Account created! Please log in.' })
+    setLoading(false)
+    router.push('/login')
   }
 
   return (

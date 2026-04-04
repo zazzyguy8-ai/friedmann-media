@@ -39,17 +39,23 @@ export default function SignupPage() {
     setErrors({})
 
     const supabase = createBrowserClient()
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
-      },
-    })
 
-    if (error) {
-      setErrors({ global: error.message })
+    // Sign up
+    const { error: signUpError } = await supabase.auth.signUp({ email, password })
+
+    if (signUpError) {
+      setErrors({ global: signUpError.message })
       setLoading(false)
+      return
+    }
+
+    // Sign in immediately so session is active
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (signInError) {
+      setErrors({ global: 'Account created! Please log in.' })
+      setLoading(false)
+      router.push('/login')
       return
     }
 

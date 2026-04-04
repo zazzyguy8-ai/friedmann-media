@@ -60,22 +60,15 @@ export default function LoginPage() {
       return
     }
 
-    // Check onboarding + trial status
+    // Check onboarding status
     const { data: profile } = await supabase
       .from('profiles')
-      .select('onboarding_completed, trial_start_date, is_premium')
+      .select('onboarding_completed')
       .eq('id', data.user.id)
       .single()
 
     if (!profile?.onboarding_completed) {
       router.push('/onboarding')
-      return
-    }
-
-    const trialStart = new Date(profile.trial_start_date)
-    const daysSinceTrial = (Date.now() - trialStart.getTime()) / (1000 * 60 * 60 * 24)
-    if (!profile.is_premium && daysSinceTrial > 7) {
-      router.push('/paywall')
       return
     }
 

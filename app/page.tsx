@@ -92,7 +92,7 @@ export default function LandingPage() {
           </div>
 
           <p className="font-mono text-xs text-[var(--muted)]">
-            7 days free · No credit card required · Cancel anytime
+            100% free · No credit card required · Start in 60 seconds
           </p>
 
           <motion.div
@@ -196,7 +196,7 @@ export default function LandingPage() {
             Start for free →
           </Link>
           <p className="font-mono text-xs text-[var(--muted)] mt-6">
-            7 days free · No credit card required · Cancel anytime
+            100% free · No credit card required · Start in 60 seconds
           </p>
         </motion.div>
       </section>

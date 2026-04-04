@@ -89,10 +89,9 @@ export default function OnboardingPage() {
       .upsert({
         id: user.id,
         name: name.trim(),
-        goal: selected ? goal : null,
+        goal: goal,
         time_available: selected,
         onboarding_completed: true,
-        trial_start_date: new Date().toISOString(),
       })
 
     if (error) {

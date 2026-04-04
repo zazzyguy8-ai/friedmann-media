@@ -3,10 +3,6 @@ export interface Profile {
   name: string | null
   goal: string | null
   time_available: string | null
-  is_premium: boolean
-  trial_start_date: string
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
   onboarding_completed: boolean
   created_at: string
 }

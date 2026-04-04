@@ -112,14 +112,6 @@ export default function DashboardPage() {
       return
     }
 
-    // Check trial
-    const trialStart = new Date(profileData.trial_start_date)
-    const daysSinceTrial = (Date.now() - trialStart.getTime()) / (1000 * 60 * 60 * 24)
-    if (!profileData.is_premium && daysSinceTrial > 7) {
-      router.push('/paywall')
-      return
-    }
-
     setProfile(profileData)
 
     // Load challenges (last 30 days)
@@ -224,7 +216,7 @@ export default function DashboardPage() {
                 <div className="px-4 py-3 border-b border-[var(--border)]">
                   <p className="font-display font-semibold text-sm text-[var(--text)]">{profile?.name}</p>
                   <p className="font-mono text-xs text-[var(--muted)]">
-                    {profile?.is_premium ? '✓ Premium' : 'Free trial'}
+                    Free forever ✓
                   </p>
                 </div>
                 <button

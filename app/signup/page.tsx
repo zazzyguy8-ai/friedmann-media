@@ -85,7 +85,7 @@ export default function SignupPage() {
             plou
           </Link>
           <h1 className="font-display font-bold text-3xl text-[var(--text)]">Create your account</h1>
-          <p className="font-display text-[var(--muted)] mt-2">Start your 7-day free trial today</p>
+          <p className="font-display text-[var(--muted)] mt-2">Free forever. Start in 60 seconds.</p>
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 flex flex-col gap-5">
@@ -173,7 +173,7 @@ export default function SignupPage() {
         </div>
 
         <p className="text-center font-mono text-xs text-[var(--muted)] mt-6">
-          7 days free · No credit card required · Cancel anytime
+          100% free · No credit card required · Start in 60 seconds
         </p>
       </motion.div>
     </div>

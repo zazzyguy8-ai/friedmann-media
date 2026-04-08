@@ -1,125 +1,161 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createBrowserClient } from '@/lib/supabase'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import type { GoalOption, TimeOption } from '@/types'
+import type { BusinessProfile } from '@/types'
 
-const GOALS: GoalOption[] = [
-  '🎯 Focus & productivity',
-  '💪 Fitness & health',
-  '👥 Social confidence',
-  '🎨 Creativity',
-  '📚 Learning',
-  '⚡ Energy & motivation',
+const INDUSTRIES = [
+  { icon: '🛍️', label: 'Retail & E-commerce' },
+  { icon: '🍽️', label: 'Food & Restaurant' },
+  { icon: '💪', label: 'Fitness & Wellness' },
+  { icon: '💄', label: 'Beauty & Fashion' },
+  { icon: '🏠', label: 'Real Estate' },
+  { icon: '💻', label: 'Tech & Software' },
+  { icon: '📚', label: 'Education & Coaching' },
+  { icon: '⚖️', label: 'Legal & Finance' },
+  { icon: '🏥', label: 'Health & Medical' },
+  { icon: '🎨', label: 'Creative & Design' },
+  { icon: '🏗️', label: 'Construction & Trades' },
+  { icon: '✈️', label: 'Travel & Hospitality' },
+  { icon: '🎵', label: 'Entertainment & Media' },
+  { icon: '🐾', label: 'Pets & Animals' },
+  { icon: '🌱', label: 'Sustainability & Green' },
+  { icon: '⚙️', label: 'Other' },
 ]
 
-const TIME_OPTIONS: { value: TimeOption; label: string; sub: string; icon: string }[] = [
-  { value: '5 minutes', label: '5 minutes', sub: 'Quick and easy', icon: '⚡' },
-  { value: '15 minutes', label: '15 minutes', sub: 'Balanced', icon: '🎯' },
-  { value: '30 minutes', label: '30 minutes', sub: "I'm serious", icon: '🔥' },
+const GOALS = [
+  { icon: '📣', label: 'Brand awareness' },
+  { icon: '💰', label: 'More sales' },
+  { icon: '👥', label: 'Grow followers' },
+  { icon: '💬', label: 'Customer engagement' },
+  { icon: '🌐', label: 'Website traffic' },
+  { icon: '🎯', label: 'Generate leads' },
+  { icon: '🤝', label: 'Build community' },
+  { icon: '⭐', label: 'Reputation & trust' },
+]
+
+const PLATFORMS = [
+  { icon: '📸', label: 'Instagram' },
+  { icon: '🎵', label: 'TikTok' },
+  { icon: '💼', label: 'LinkedIn' },
+  { icon: '🐦', label: 'Twitter / X' },
+  { icon: '📘', label: 'Facebook' },
+  { icon: '▶️', label: 'YouTube' },
+  { icon: '📌', label: 'Pinterest' },
+]
+
+const BRAND_VOICES = [
+  { icon: '👔', label: 'Professional' },
+  { icon: '😊', label: 'Friendly & casual' },
+  { icon: '💥', label: 'Bold & confident' },
+  { icon: '🎓', label: 'Educational' },
+  { icon: '🎉', label: 'Playful & fun' },
+  { icon: '💎', label: 'Luxurious' },
+  { icon: '🌟', label: 'Inspirational' },
+  { icon: '🤝', label: 'Authentic & honest' },
 ]
 
 const variants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 60 : -60,
-    opacity: 0,
-  }),
+  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (direction: number) => ({
-    x: direction < 0 ? 60 : -60,
-    opacity: 0,
-  }),
+  exit: (dir: number) => ({ x: dir < 0 ? 60 : -60, opacity: 0 }),
+}
+
+function ToggleChip({ icon, label, selected, onClick }: { icon: string; label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <motion.button type="button" whileTap={{ scale: 0.96 }} onClick={onClick}
+      className={`flex items-center gap-2 px-4 py-3 rounded-xl border font-display text-sm font-medium transition-all duration-200 ${
+        selected ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.12)] text-[var(--text)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)]'
+      }`}>
+      <span>{icon}</span><span>{label}</span>
+    </motion.button>
+  )
 }
 
 export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
-  const [direction, setDirection] = useState(1)
-  const [name, setName] = useState('')
-  const [goal, setGoal] = useState<GoalOption | null>(null)
-  const [timeAvailable, setTimeAvailable] = useState<TimeOption | null>(null)
-  const [nameError, setNameError] = useState('')
+  const [dir, setDir] = useState(1)
   const [saving, setSaving] = useState(false)
-  const [showCelebration, setShowCelebration] = useState(false)
+  const [error, setError] = useState('')
 
-  useEffect(() => {
-    const supabase = createBrowserClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.push('/login')
-    })
-  }, [router])
+  const [ownerName, setOwnerName] = useState('')
+  const [businessName, setBusinessName] = useState('')
+  const [industry, setIndustry] = useState('')
+  const [targetAudience, setTargetAudience] = useState('')
+  const [goals, setGoals] = useState<string[]>([])
+  const [platforms, setPlatforms] = useState<string[]>([])
+  const [brandVoice, setBrandVoice] = useState<string[]>([])
+  const [competitors, setCompetitors] = useState('')
+  const [contentThemes, setContentThemes] = useState('')
 
-  const goToStep = (next: number) => {
-    setDirection(next > step ? 1 : -1)
-    setStep(next)
-  }
+  const TOTAL = 8
 
-  const handleNameContinue = () => {
-    if (!name.trim()) {
-      setNameError('Please enter your name')
-      return
+  const go = (next: number) => { setError(''); setDir(next > step ? 1 : -1); setStep(next) }
+
+  const toggle = (list: string[], setList: (v: string[]) => void, item: string) =>
+    setList(list.includes(item) ? list.filter((i) => i !== item) : [...list, item])
+
+  const next = () => {
+    if (step === 1) {
+      if (!ownerName.trim()) { setError('Please enter your name'); return }
+      if (!businessName.trim()) { setError('Please enter your business name'); return }
     }
-    setNameError('')
-    goToStep(2)
+    if (step === 2 && !industry) { setError('Please select your industry'); return }
+    if (step === 3 && !targetAudience.trim()) { setError('Please describe your target audience'); return }
+    if (step === 4 && goals.length === 0) { setError('Please select at least one goal'); return }
+    if (step === 5 && platforms.length === 0) { setError('Please select at least one platform'); return }
+    if (step === 6 && brandVoice.length === 0) { setError('Please select at least one voice'); return }
+    go(step + 1)
   }
 
-  const handleGoalSelect = (selected: GoalOption) => {
-    setGoal(selected)
-    setTimeout(() => goToStep(3), 200)
-  }
-
-  const handleTimeSelect = async (selected: TimeOption) => {
-    setTimeAvailable(selected)
+  const finish = () => {
+    if (!contentThemes.trim()) { setError('Please describe your content themes'); return }
     setSaving(true)
 
-    const supabase = createBrowserClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      router.push('/login')
-      return
+    const profile: BusinessProfile = {
+      businessName: businessName.trim(),
+      ownerName: ownerName.trim(),
+      industry,
+      targetAudience: targetAudience.trim(),
+      goals,
+      platforms,
+      brandVoice,
+      competitors: competitors.trim(),
+      contentThemes: contentThemes.trim(),
     }
 
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        name: name.trim(),
-        goal: goal,
-        time_available: selected,
-        onboarding_completed: true,
-      })
-
-    if (error) {
-      console.error('Failed to save profile:', error)
-      setSaving(false)
-      return
-    }
-
-    setShowCelebration(true)
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 2000)
+    // Save to localStorage — no auth needed
+    localStorage.setItem('plou_business', JSON.stringify(profile))
+    router.push('/dashboard')
   }
 
-  if (showCelebration) {
+  const stepQuestion: Record<number, string> = {
+    1: "Hi! I'm Plou. Let's start with the basics.",
+    2: `What industry is ${businessName || 'your business'} in?`,
+    3: 'Who is your ideal customer?',
+    4: 'What do you want to achieve on social media?',
+    5: 'Which platforms are you on, or want to grow?',
+    6: `How should ${businessName || 'your brand'} sound online?`,
+    7: 'Who are your main competitors? (optional)',
+    8: 'What topics matter most to your audience?',
+  }
+
+  if (saving) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex flex-col items-center justify-center gap-6">
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <span className="text-8xl">🎉</span>
-          <h2 className="font-display font-bold text-4xl text-[var(--text)]">You&apos;re all set!</h2>
-          <p className="font-display text-[var(--muted)] text-xl text-center">
-            Your first challenge is ready.
-          </p>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-6 text-center max-w-sm px-6">
+          <div className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-2xl text-white shadow-lg shadow-[rgba(91,139,255,0.4)]">P</div>
+          <div>
+            <h2 className="font-display font-bold text-3xl text-[var(--text)]">Plou is learning your business...</h2>
+            <p className="font-display text-[var(--muted)] mt-2">Building your personalized dashboard.</p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <motion.span key={i} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, delay: i * 0.2, repeat: Infinity }} className="w-2 h-2 rounded-full bg-[var(--accent)]" />
+            ))}
+          </div>
         </motion.div>
       </div>
     )
@@ -127,170 +163,134 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] flex flex-col items-center justify-center px-6 py-12">
-      <div className="w-full max-w-lg">
-        {/* Logo */}
-        <div className="text-center mb-10">
+      <div className="w-full max-w-xl">
+        <div className="text-center mb-8">
           <span className="font-display font-bold text-3xl gradient-text">plou</span>
         </div>
 
         {/* Progress */}
-        <div className="flex items-center gap-2 mb-10">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={`h-1 rounded-full flex-1 transition-all duration-500 ${
-                s <= step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
-              }`}
-            />
+        <div className="flex items-center gap-1.5 mb-8">
+          {Array.from({ length: TOTAL }).map((_, i) => (
+            <div key={i} className={`h-1 rounded-full flex-1 transition-all duration-500 ${i < step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'}`} />
           ))}
         </div>
 
-        <AnimatePresence mode="wait" custom={direction}>
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-              className="flex flex-col gap-8"
-            >
-              <div className="text-center">
-                <p className="font-mono text-xs text-[var(--muted)] mb-3 uppercase tracking-widest">
-                  Step 1 of 3
-                </p>
-                <h2 className="font-display font-bold text-4xl text-[var(--text)]">
-                  What should we call you?
-                </h2>
+        {/* Plou avatar + question */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-white shrink-0">P</div>
+          <div>
+            <p className="font-mono text-xs text-[var(--muted)] mb-0.5">Step {step} of {TOTAL}</p>
+            <p className="font-display font-semibold text-lg text-[var(--text)]">{stepQuestion[step]}</p>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait" custom={dir}>
+          <motion.div key={step} custom={dir} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.28 }} className="flex flex-col gap-6">
+
+            {step === 1 && (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-display text-sm font-medium text-[var(--muted)]">Your name</label>
+                  <input type="text" placeholder="e.g. Sarah" value={ownerName} autoFocus
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOwnerName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-display text-sm font-medium text-[var(--muted)]">Business name</label>
+                  <input type="text" placeholder="e.g. Bloom Bakery" value={businessName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBusinessName(e.target.value)}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && next()}
+                    className="w-full px-4 py-3 rounded-xl bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all" />
+                </div>
               </div>
+            )}
 
-              <Input
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                error={nameError}
-                onKeyDown={(e) => e.key === 'Enter' && handleNameContinue()}
-                autoFocus
-                className="text-lg py-4 text-center"
-              />
-
-              <Button variant="primary" size="lg" fullWidth onClick={handleNameContinue}>
-                Continue →
-              </Button>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-              className="flex flex-col gap-8"
-            >
-              <div className="text-center">
-                <p className="font-mono text-xs text-[var(--muted)] mb-3 uppercase tracking-widest">
-                  Step 2 of 3
-                </p>
-                <h2 className="font-display font-bold text-4xl text-[var(--text)]">
-                  What do you want to improve?
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                {GOALS.map((g) => (
-                  <motion.button
-                    key={g}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleGoalSelect(g)}
-                    className={`
-                      p-4 rounded-xl text-left font-display font-medium text-sm
-                      border transition-all duration-200
-                      ${
-                        goal === g
-                          ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.1)] text-[var(--text)]'
-                          : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)]'
-                      }
-                    `}
-                  >
-                    {g}
+            {step === 2 && (
+              <div className="grid grid-cols-2 gap-2.5">
+                {INDUSTRIES.map((ind) => (
+                  <motion.button key={ind.label} type="button" whileTap={{ scale: 0.97 }} onClick={() => { setIndustry(ind.label); setError('') }}
+                    className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border font-display text-sm font-medium text-left transition-all ${industry === ind.label ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.12)] text-[var(--text)]' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)]'}`}>
+                    <span>{ind.icon}</span><span>{ind.label}</span>
                   </motion.button>
                 ))}
               </div>
+            )}
 
-              <button
-                onClick={() => goToStep(1)}
-                className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors text-center"
-              >
-                ← Back
-              </button>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-              className="flex flex-col gap-8"
-            >
-              <div className="text-center">
-                <p className="font-mono text-xs text-[var(--muted)] mb-3 uppercase tracking-widest">
-                  Step 3 of 3
-                </p>
-                <h2 className="font-display font-bold text-4xl text-[var(--text)]">
-                  How much time do you have daily?
-                </h2>
-              </div>
-
+            {step === 3 && (
               <div className="flex flex-col gap-3">
-                {TIME_OPTIONS.map((opt) => (
-                  <motion.button
-                    key={opt.value}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => !saving && handleTimeSelect(opt.value)}
-                    disabled={saving}
-                    className={`
-                      p-5 rounded-xl text-left border transition-all duration-200 flex items-center gap-4
-                      ${
-                        timeAvailable === opt.value
-                          ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.1)]'
-                          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]'
-                      }
-                      disabled:opacity-50
-                    `}
-                  >
-                    <span className="text-3xl">{opt.icon}</span>
-                    <div>
-                      <p className="font-display font-semibold text-[var(--text)] text-lg">
-                        {opt.label}
-                      </p>
-                      <p className="font-display text-[var(--muted)] text-sm">{opt.sub}</p>
-                    </div>
-                  </motion.button>
+                <textarea rows={4} autoFocus placeholder="e.g. Women aged 25–40 who care about healthy eating and want quick, affordable recipes for busy weekdays."
+                  value={targetAudience}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTargetAudience(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all resize-none leading-relaxed" />
+                <p className="font-mono text-xs text-[var(--muted)]">Be specific — age, interests, pain points. The more detail, the better Plou helps you.</p>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="grid grid-cols-2 gap-2.5">
+                {GOALS.map((g) => (
+                  <ToggleChip key={g.label} icon={g.icon} label={g.label} selected={goals.includes(g.label)} onClick={() => { toggle(goals, setGoals, g.label); setError('') }} />
                 ))}
               </div>
+            )}
 
-              <button
-                onClick={() => goToStep(2)}
-                className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors text-center"
-              >
-                ← Back
-              </button>
-            </motion.div>
-          )}
+            {step === 5 && (
+              <div className="grid grid-cols-2 gap-2.5">
+                {PLATFORMS.map((p) => (
+                  <ToggleChip key={p.label} icon={p.icon} label={p.label} selected={platforms.includes(p.label)} onClick={() => { toggle(platforms, setPlatforms, p.label); setError('') }} />
+                ))}
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="grid grid-cols-2 gap-2.5">
+                {BRAND_VOICES.map((v) => (
+                  <ToggleChip key={v.label} icon={v.icon} label={v.label} selected={brandVoice.includes(v.label)} onClick={() => { toggle(brandVoice, setBrandVoice, v.label); setError('') }} />
+                ))}
+              </div>
+            )}
+
+            {step === 7 && (
+              <div className="flex flex-col gap-3">
+                <input type="text" autoFocus placeholder="e.g. BrandA, BrandB, local competitor..." value={competitors}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompetitors(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all" />
+                <p className="font-mono text-xs text-[var(--muted)]">This is optional — skip it if you&apos;re not sure.</p>
+              </div>
+            )}
+
+            {step === 8 && (
+              <div className="flex flex-col gap-3">
+                <textarea rows={4} autoFocus placeholder="e.g. Behind-the-scenes, recipe tips, customer stories, seasonal specials, how-to videos."
+                  value={contentThemes}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContentThemes(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--surface2)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all resize-none leading-relaxed" />
+                <p className="font-mono text-xs text-[var(--muted)]">Topics you want to post about regularly — themes, categories, content types.</p>
+              </div>
+            )}
+
+          </motion.div>
         </AnimatePresence>
+
+        {error && (
+          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-4 font-display text-sm text-[var(--red)]">{error}</motion.p>
+        )}
+
+        <div className="flex items-center justify-between mt-8 gap-4">
+          {step > 1 ? (
+            <button onClick={() => go(step - 1)} className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">← Back</button>
+          ) : <div />}
+
+          {step < TOTAL ? (
+            <motion.button whileTap={{ scale: 0.97 }} onClick={next} className="font-display font-semibold text-white gradient-bg px-7 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-[rgba(91,139,255,0.25)]">
+              {step === 7 && !competitors.trim() ? 'Skip →' : 'Continue →'}
+            </motion.button>
+          ) : (
+            <motion.button whileTap={{ scale: 0.97 }} onClick={finish} className="font-display font-semibold text-white gradient-bg px-7 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-[rgba(91,139,255,0.25)]">
+              Meet Plou →
+            </motion.button>
+          )}
+        </div>
       </div>
     </div>
   )

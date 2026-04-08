@@ -87,7 +87,7 @@ export default function LoginPage() {
             plou
           </Link>
           <h1 className="font-display font-bold text-3xl text-[var(--text)]">Welcome back</h1>
-          <p className="font-display text-[var(--muted)] mt-2">Keep your streak alive</p>
+          <p className="font-display text-[var(--muted)] mt-2">Your AI social media expert is waiting.</p>
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 flex flex-col gap-5">

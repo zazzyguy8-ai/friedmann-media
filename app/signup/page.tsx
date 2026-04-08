@@ -96,7 +96,7 @@ export default function SignupPage() {
             plou
           </Link>
           <h1 className="font-display font-bold text-3xl text-[var(--text)]">Create your account</h1>
-          <p className="font-display text-[var(--muted)] mt-2">Free forever. Start in 60 seconds.</p>
+          <p className="font-display text-[var(--muted)] mt-2">Meet your AI social media expert. Free. No credit card.</p>
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 flex flex-col gap-5">

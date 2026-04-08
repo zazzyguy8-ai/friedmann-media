@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Plou — Daily challenges that actually stick',
+  title: 'Plou — AI Social Media Expert for Your Business',
   description:
-    'One AI-generated challenge every day based on your goals. Build streaks. Change your life. 7 days free.',
-  keywords: ['daily challenges', 'habit building', 'AI', 'productivity', 'streak'],
+    'Plou learns your business inside out, then becomes your dedicated AI social media strategist. Content ideas, personalized strategy, and always-on advice — built for your brand.',
+  keywords: ['social media strategy', 'AI social media manager', 'content ideas', 'social media planner', 'business growth'],
 }
 
 export default function RootLayout({

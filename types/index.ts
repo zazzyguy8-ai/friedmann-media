@@ -1,40 +1,41 @@
+export interface BusinessProfile {
+  businessName: string
+  ownerName: string
+  industry: string
+  targetAudience: string
+  goals: string[]
+  platforms: string[]
+  brandVoice: string[]
+  competitors: string
+  contentThemes: string
+}
+
 export interface Profile {
   id: string
-  name: string | null
-  goal: string | null
+  name: string | null         // owner name
+  goal: string | null         // JSON-stringified BusinessProfile
   time_available: string | null
   onboarding_completed: boolean
   created_at: string
 }
 
-export interface Challenge {
-  id: string
-  user_id: string
-  date: string
-  challenge_text: string
-  completed: boolean
-  completed_at: string | null
-  created_at: string
+export interface Message {
+  role: 'user' | 'assistant'
+  content: string
 }
 
-export interface StreakData {
-  current_streak: number
-  last_7_days: DayStatus[]
+export interface ContentIdea {
+  platform: string
+  type: string
+  title: string
+  hook: string
+  description: string
 }
 
+// Kept for compatibility with existing UI components
 export interface DayStatus {
   date: string
   completed: boolean
   is_today: boolean
   label: string
 }
-
-export type GoalOption =
-  | '🎯 Focus & productivity'
-  | '💪 Fitness & health'
-  | '👥 Social confidence'
-  | '🎨 Creativity'
-  | '📚 Learning'
-  | '⚡ Energy & motivation'
-
-export type TimeOption = '5 minutes' | '15 minutes' | '30 minutes'

@@ -8,7 +8,7 @@ import type { BusinessProfile, Message, ContentIdea } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Tab = 'chat' | 'ideas' | 'strategy'
+type Tab = 'chat' | 'ideas' | 'strategy' | 'website' | 'chatbot'
 
 interface Strategy {
   overview: string
@@ -17,6 +17,30 @@ interface Strategy {
   quickWins: string[]
   thirtyDayPlan: string
 }
+
+const SITE_TYPES = [
+  { id: 'Landing Page', icon: '🚀', desc: 'Hero, benefits, CTA' },
+  { id: 'Service Business', icon: '🏢', desc: 'Services, about, contact' },
+  { id: 'Restaurant / Cafe', icon: '🍽️', desc: 'Menu, atmosphere, reservations' },
+  { id: 'Online Store', icon: '🛍️', desc: 'Products, brand story, reviews' },
+  { id: 'Portfolio', icon: '🎨', desc: 'Work, skills, contact' },
+  { id: 'Professional Profile', icon: '👤', desc: 'Bio, expertise, testimonials' },
+]
+
+const SITE_STYLES = [
+  { id: 'Clean & Minimal', preview: 'bg-white text-gray-900', dot: 'bg-gray-200' },
+  { id: 'Bold & Dark', preview: 'bg-gray-950 text-white', dot: 'bg-violet-500' },
+  { id: 'Warm & Organic', preview: 'bg-amber-50 text-stone-900', dot: 'bg-amber-600' },
+  { id: 'Corporate & Professional', preview: 'bg-blue-950 text-white', dot: 'bg-blue-400' },
+  { id: 'Creative & Bold', preview: 'bg-fuchsia-950 text-white', dot: 'bg-fuchsia-400' },
+]
+
+const BOT_PERSONALITIES = [
+  { id: 'Friendly Helper', icon: '😊', desc: 'Warm and casual tone' },
+  { id: 'Professional Assistant', icon: '💼', desc: 'Formal and precise' },
+  { id: 'Sales-focused', icon: '🎯', desc: 'Benefit-driven, guides to CTA' },
+  { id: 'Support Expert', icon: '🛠️', desc: 'Patient and solution-focused' },
+]
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -134,6 +158,22 @@ export default function DashboardPage() {
   const [strategy, setStrategy] = useState<Strategy | null>(null)
   const [strategyLoading, setStrategyLoading] = useState(false)
   const [strategyGenerated, setStrategyGenerated] = useState(false)
+
+  // Website builder state
+  const [siteType, setSiteType] = useState(SITE_TYPES[0].id)
+  const [siteStyle, setSiteStyle] = useState(SITE_STYLES[0].id)
+  const [websiteHtml, setWebsiteHtml] = useState('')
+  const [websiteLoading, setWebsiteLoading] = useState(false)
+  const [websiteGenerated, setWebsiteGenerated] = useState(false)
+  const [websiteCopied, setWebsiteCopied] = useState(false)
+
+  // Chatbot builder state
+  const [botPersonality, setBotPersonality] = useState(BOT_PERSONALITIES[0].id)
+  const [chatbotHtml, setChatbotHtml] = useState('')
+  const [chatbotLoading, setChatbotLoading] = useState(false)
+  const [chatbotGenerated, setChatbotGenerated] = useState(false)
+  const [chatbotCopied, setChatbotCopied] = useState(false)
+  const [chatbotPreview, setChatbotPreview] = useState(false)
 
   // ── Load data ─────────────────────────────────────────────────────────────
 
@@ -261,6 +301,74 @@ What do you want to tackle first? I can write captions, build a weekly content p
     }
   }
 
+  // ── Website ───────────────────────────────────────────────────────────────
+
+  const generateWebsite = async () => {
+    setWebsiteLoading(true)
+    setWebsiteGenerated(false)
+    try {
+      const res = await fetch('/api/plou-website', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteType, style: siteStyle }),
+      })
+      const data = await res.json()
+      if (data.html) {
+        setWebsiteHtml(data.html)
+        setWebsiteGenerated(true)
+      }
+    } catch {
+      // user can retry
+    } finally {
+      setWebsiteLoading(false)
+    }
+  }
+
+  const copyWebsite = async () => {
+    await navigator.clipboard.writeText(websiteHtml)
+    setWebsiteCopied(true)
+    setTimeout(() => setWebsiteCopied(false), 2000)
+  }
+
+  const downloadWebsite = () => {
+    const blob = new Blob([websiteHtml], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${profile?.businessName?.replace(/\s+/g, '-').toLowerCase() || 'website'}.html`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // ── Chatbot ───────────────────────────────────────────────────────────────
+
+  const generateChatbot = async () => {
+    setChatbotLoading(true)
+    setChatbotGenerated(false)
+    try {
+      const res = await fetch('/api/plou-chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ botPersonality }),
+      })
+      const data = await res.json()
+      if (data.html) {
+        setChatbotHtml(data.html)
+        setChatbotGenerated(true)
+      }
+    } catch {
+      // user can retry
+    } finally {
+      setChatbotLoading(false)
+    }
+  }
+
+  const copyChatbot = async () => {
+    await navigator.clipboard.writeText(chatbotHtml)
+    setChatbotCopied(true)
+    setTimeout(() => setChatbotCopied(false), 2000)
+  }
+
   // ── Logout ────────────────────────────────────────────────────────────────
 
   const handleLogout = async () => {
@@ -288,29 +396,37 @@ What do you want to tackle first? I can write captions, build a weekly content p
     <div className="min-h-screen bg-[var(--bg)] flex flex-col">
 
       {/* ── Top nav ─────────────────────────────────────────────────────── */}
-      <nav className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-sm sticky top-0 z-40">
-        <div className="flex items-center gap-3">
+      <nav className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-sm sticky top-0 z-40 gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <span className="font-display font-bold text-xl gradient-text">plou</span>
           {profile && (
-            <span className="hidden sm:block font-mono text-xs text-[var(--muted)] border-l border-[var(--border)] pl-3">
+            <span className="hidden lg:block font-mono text-xs text-[var(--muted)] border-l border-[var(--border)] pl-3 truncate max-w-[140px]">
               {profile.businessName}
             </span>
           )}
         </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-1 bg-[var(--surface)] border border-[var(--border)] p-1 rounded-xl">
-          {(['chat', 'ideas', 'strategy'] as Tab[]).map((t) => (
+        {/* Tabs — scrollable on mobile */}
+        <div className="flex items-center gap-1 bg-[var(--surface)] border border-[var(--border)] p-1 rounded-xl overflow-x-auto scrollbar-none flex-1 max-w-md mx-auto">
+          {(
+            [
+              { id: 'chat', label: '💬 Chat' },
+              { id: 'ideas', label: '💡 Ideas' },
+              { id: 'strategy', label: '📈 Strategy' },
+              { id: 'website', label: '🌐 Website' },
+              { id: 'chatbot', label: '🤖 Chatbot' },
+            ] as { id: Tab; label: string }[]
+          ).map((t) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`font-display text-sm px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                tab === t
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`font-display text-xs sm:text-sm px-2.5 sm:px-3 py-1.5 rounded-lg transition-all duration-200 whitespace-nowrap shrink-0 ${
+                tab === t.id
                   ? 'gradient-bg text-white font-semibold shadow-sm'
                   : 'text-[var(--muted)] hover:text-[var(--text)]'
               }`}
             >
-              {t === 'chat' ? '💬 Chat' : t === 'ideas' ? '💡 Ideas' : '📈 Strategy'}
+              {t.label}
             </button>
           ))}
         </div>
@@ -630,6 +746,342 @@ What do you want to tackle first? I can write captions, build a weekly content p
                   <p className="font-display text-[var(--text)] leading-relaxed">{strategy.thirtyDayPlan}</p>
                 </motion.div>
 
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── WEBSITE TAB ───────────────────────────────────────────────── */}
+        {tab === 'website' && (
+          <div className="max-w-5xl mx-auto px-4 py-8 overflow-y-auto h-[calc(100vh-57px)]">
+            <div className="mb-6">
+              <h2 className="font-display font-bold text-2xl text-[var(--text)]">Website builder</h2>
+              <p className="font-display text-sm text-[var(--muted)] mt-1">
+                Plou generates a complete, professional website for {profile?.businessName}
+              </p>
+            </div>
+
+            {/* Config */}
+            {!websiteGenerated && !websiteLoading && (
+              <div className="flex flex-col gap-8 max-w-3xl">
+                {/* Site type */}
+                <div>
+                  <p className="font-display font-semibold text-[var(--text)] mb-3">What kind of website?</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {SITE_TYPES.map((s) => (
+                      <motion.button
+                        key={s.id}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setSiteType(s.id)}
+                        className={`p-4 rounded-xl border text-left transition-all duration-200 ${
+                          siteType === s.id
+                            ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.1)]'
+                            : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]'
+                        }`}
+                      >
+                        <span className="text-2xl block mb-2">{s.icon}</span>
+                        <p className="font-display font-semibold text-[var(--text)] text-sm">{s.id}</p>
+                        <p className="font-mono text-xs text-[var(--muted)] mt-0.5">{s.desc}</p>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Visual style */}
+                <div>
+                  <p className="font-display font-semibold text-[var(--text)] mb-3">Visual style</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {SITE_STYLES.map((s) => (
+                      <motion.button
+                        key={s.id}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setSiteStyle(s.id)}
+                        className={`p-4 rounded-xl border text-left transition-all duration-200 flex items-center gap-3 ${
+                          siteStyle === s.id
+                            ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.1)]'
+                            : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]'
+                        }`}
+                      >
+                        <span className={`w-8 h-8 rounded-lg ${s.preview} flex items-center justify-center shrink-0 border border-white/10`}>
+                          <span className={`w-2.5 h-2.5 rounded-full ${s.dot}`} />
+                        </span>
+                        <span className="font-display text-sm text-[var(--text)] font-medium">{s.id}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={generateWebsite}
+                  className="self-start flex items-center gap-2 font-display font-semibold text-white gradient-bg px-7 py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.25)]"
+                >
+                  🌐 Build my website →
+                </motion.button>
+              </div>
+            )}
+
+            {websiteLoading && (
+              <div className="flex flex-col items-center justify-center py-32 gap-5">
+                <div className="w-12 h-12 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-xl text-white animate-pulse">P</div>
+                <div className="text-center">
+                  <p className="font-display font-semibold text-lg text-[var(--text)]">Designing your website...</p>
+                  <p className="font-display text-sm text-[var(--muted)] mt-1">This takes 20–40 seconds. Plou writes every line.</p>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1.2, delay: i * 0.2, repeat: Infinity }}
+                      className="w-2 h-2 rounded-full bg-[var(--accent)]"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {websiteGenerated && !websiteLoading && (
+              <div className="flex flex-col gap-4">
+                {/* Action bar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                  <div>
+                    <p className="font-display font-semibold text-[var(--text)] text-sm">Your website is ready</p>
+                    <p className="font-mono text-xs text-[var(--muted)]">{siteType} · {siteStyle}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => { setWebsiteGenerated(false); setWebsiteHtml('') }}
+                      className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all"
+                    >
+                      ← Change options
+                    </button>
+                    <button
+                      onClick={generateWebsite}
+                      className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all"
+                    >
+                      ↺ Regenerate
+                    </button>
+                    <button
+                      onClick={downloadWebsite}
+                      className="font-display font-semibold text-sm text-white gradient-bg px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      ↓ Download
+                    </button>
+                    <button
+                      onClick={copyWebsite}
+                      className="font-display font-semibold text-sm text-white gradient-bg px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      {websiteCopied ? '✓ Copied!' : '⎘ Copy HTML'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div className="rounded-2xl overflow-hidden border border-[var(--border)] bg-white" style={{ height: '75vh' }}>
+                  {/* Browser chrome */}
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-[var(--surface2)] border-b border-[var(--border)]">
+                    <span className="w-3 h-3 rounded-full bg-[rgba(255,91,91,0.6)]" />
+                    <span className="w-3 h-3 rounded-full bg-[rgba(255,209,61,0.6)]" />
+                    <span className="w-3 h-3 rounded-full bg-[rgba(61,224,135,0.6)]" />
+                    <div className="flex-1 mx-4 px-3 py-1 rounded-md bg-[var(--surface)] border border-[var(--border)] font-mono text-xs text-[var(--muted)] truncate">
+                      {profile?.businessName?.toLowerCase().replace(/\s+/g, '')}.com
+                    </div>
+                  </div>
+                  <iframe
+                    srcDoc={websiteHtml}
+                    title="Website preview"
+                    className="w-full border-0"
+                    style={{ height: 'calc(75vh - 44px)' }}
+                    sandbox="allow-scripts allow-same-origin"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── CHATBOT TAB ───────────────────────────────────────────────── */}
+        {tab === 'chatbot' && (
+          <div className="max-w-4xl mx-auto px-4 py-8 overflow-y-auto h-[calc(100vh-57px)]">
+            <div className="mb-6">
+              <h2 className="font-display font-bold text-2xl text-[var(--text)]">Chatbot builder</h2>
+              <p className="font-display text-sm text-[var(--muted)] mt-1">
+                A professional chat widget for your website — ready to embed in minutes
+              </p>
+            </div>
+
+            {!chatbotGenerated && !chatbotLoading && (
+              <div className="flex flex-col gap-8 max-w-2xl">
+                <div>
+                  <p className="font-display font-semibold text-[var(--text)] mb-3">Bot personality</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {BOT_PERSONALITIES.map((p) => (
+                      <motion.button
+                        key={p.id}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setBotPersonality(p.id)}
+                        className={`p-4 rounded-xl border text-left transition-all duration-200 flex items-center gap-4 ${
+                          botPersonality === p.id
+                            ? 'border-[var(--accent)] bg-[rgba(91,139,255,0.1)]'
+                            : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]'
+                        }`}
+                      >
+                        <span className="text-3xl">{p.icon}</span>
+                        <div>
+                          <p className="font-display font-semibold text-[var(--text)] text-sm">{p.id}</p>
+                          <p className="font-mono text-xs text-[var(--muted)]">{p.desc}</p>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-xl bg-[var(--surface)] border border-[var(--border)] flex flex-col gap-2">
+                  <p className="font-display font-semibold text-[var(--text)] text-sm">What you get</p>
+                  {[
+                    'A floating chat button that opens on your site',
+                    'Pre-programmed answers based on your business',
+                    'Professional styling that matches your brand',
+                    'Copy-paste embed code — works on any website',
+                    'Mobile-friendly full-screen view',
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-2.5">
+                      <span className="text-[var(--green)] font-bold shrink-0">✓</span>
+                      <span className="font-display text-sm text-[var(--muted)]">{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={generateChatbot}
+                  className="self-start flex items-center gap-2 font-display font-semibold text-white gradient-bg px-7 py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.25)]"
+                >
+                  🤖 Build my chatbot →
+                </motion.button>
+              </div>
+            )}
+
+            {chatbotLoading && (
+              <div className="flex flex-col items-center justify-center py-32 gap-5">
+                <div className="w-12 h-12 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-xl text-white animate-pulse">P</div>
+                <div className="text-center">
+                  <p className="font-display font-semibold text-lg text-[var(--text)]">Building your chatbot...</p>
+                  <p className="font-display text-sm text-[var(--muted)] mt-1">Writing responses, designing the widget...</p>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1.2, delay: i * 0.2, repeat: Infinity }}
+                      className="w-2 h-2 rounded-full bg-[var(--accent)]"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {chatbotGenerated && !chatbotLoading && (
+              <div className="flex flex-col gap-4">
+                {/* Action bar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                  <div>
+                    <p className="font-display font-semibold text-[var(--text)] text-sm">Chatbot ready</p>
+                    <p className="font-mono text-xs text-[var(--muted)]">{botPersonality} · embed on any website</p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={() => { setChatbotGenerated(false); setChatbotHtml('') }}
+                      className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all"
+                    >
+                      ← Change options
+                    </button>
+                    <button
+                      onClick={generateChatbot}
+                      className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all"
+                    >
+                      ↺ Regenerate
+                    </button>
+                    <button
+                      onClick={() => setChatbotPreview(!chatbotPreview)}
+                      className={`font-display font-semibold text-sm px-4 py-2 rounded-lg border transition-all ${
+                        chatbotPreview
+                          ? 'border-[var(--accent)] text-[var(--accent)] bg-[rgba(91,139,255,0.1)]'
+                          : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)]'
+                      }`}
+                    >
+                      {chatbotPreview ? '🖥 Hide preview' : '🖥 Live preview'}
+                    </button>
+                    <button
+                      onClick={copyChatbot}
+                      className="font-display font-semibold text-sm text-white gradient-bg px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      {chatbotCopied ? '✓ Copied!' : '⎘ Copy embed code'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Live preview */}
+                {chatbotPreview && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-2xl overflow-hidden border border-[var(--border)]"
+                    style={{ height: '70vh' }}
+                  >
+                    <div className="flex items-center gap-2 px-4 py-2.5 bg-[var(--surface2)] border-b border-[var(--border)]">
+                      <span className="w-3 h-3 rounded-full bg-[rgba(255,91,91,0.6)]" />
+                      <span className="w-3 h-3 rounded-full bg-[rgba(255,209,61,0.6)]" />
+                      <span className="w-3 h-3 rounded-full bg-[rgba(61,224,135,0.6)]" />
+                      <div className="flex-1 mx-4 px-3 py-1 rounded-md bg-[var(--surface)] border border-[var(--border)] font-mono text-xs text-[var(--muted)]">
+                        yourwebsite.com — chatbot preview
+                      </div>
+                    </div>
+                    <iframe
+                      srcDoc={chatbotHtml}
+                      title="Chatbot preview"
+                      className="w-full border-0 bg-white"
+                      style={{ height: 'calc(70vh - 44px)' }}
+                      sandbox="allow-scripts allow-same-origin"
+                    />
+                  </motion.div>
+                )}
+
+                {/* Code block */}
+                <div className="rounded-2xl bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+                    <p className="font-mono text-xs text-[var(--muted)]">Full embed code</p>
+                    <button
+                      onClick={copyChatbot}
+                      className="font-mono text-xs text-[var(--accent)] hover:underline"
+                    >
+                      {chatbotCopied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <pre className="p-4 overflow-x-auto text-xs font-mono text-[var(--muted)] leading-relaxed max-h-64">
+                    <code>{chatbotHtml.slice(0, 800)}...</code>
+                  </pre>
+                </div>
+
+                {/* How to use */}
+                <div className="p-5 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+                  <p className="font-display font-semibold text-[var(--text)] text-sm mb-3">How to add it to your website</p>
+                  <div className="flex flex-col gap-3">
+                    {[
+                      { step: '1', text: 'Copy the embed code above' },
+                      { step: '2', text: 'Paste it before the </body> tag on every page of your website' },
+                      { step: '3', text: 'The chat button will appear in the bottom-right corner automatically' },
+                      { step: '4', text: 'Works on WordPress, Wix, Squarespace, Webflow, or any custom HTML site' },
+                    ].map((item) => (
+                      <div key={item.step} className="flex items-start gap-3">
+                        <span className="w-6 h-6 rounded-full gradient-bg flex items-center justify-center font-mono text-xs text-white font-bold shrink-0">{item.step}</span>
+                        <p className="font-display text-sm text-[var(--muted)] leading-relaxed">{item.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>

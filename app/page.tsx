@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -230,20 +229,12 @@ export default function LandingPage() {
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-md">
         <span className="font-display font-bold text-2xl gradient-text">plou</span>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="font-display font-medium text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors px-3 py-2"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="font-display font-semibold text-sm text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.2)]"
-          >
-            Start free
-          </Link>
-        </div>
+        <a
+          href="#waitlist"
+          className="font-display font-semibold text-sm text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.2)]"
+        >
+          Get early access
+        </a>
       </nav>
 
       <div className="relative z-10">
@@ -259,7 +250,7 @@ export default function LandingPage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)]">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] animate-pulse" />
-              <span className="font-mono text-xs text-[var(--muted)]">Now live — start for free</span>
+              <span className="font-mono text-xs text-[var(--muted)]">Coming soon — join the waitlist</span>
             </div>
 
             {/* Headline */}
@@ -286,25 +277,13 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Primary CTA */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 mt-1">
-              <Link
-                href="/signup"
-                className="font-display font-semibold text-white gradient-bg px-9 py-4 rounded-xl text-lg hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)]"
-              >
-                Start free — it takes 5 min →
-              </Link>
-              <a
-                href="#how-it-works"
-                className="font-display font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors px-6 py-4 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] bg-[var(--surface)]"
-              >
-                See how it works
-              </a>
+            {/* Waitlist CTA */}
+            <div id="waitlist" className="flex flex-col items-center gap-3 w-full mt-1">
+              <WaitlistForm />
+              <p className="font-mono text-xs text-[var(--muted)]">
+                Free to join · No spam · We&apos;ll email you when it&apos;s live
+              </p>
             </div>
-
-            <p className="font-mono text-xs text-[var(--muted)]">
-              100% free · No credit card · Ready in 5 minutes
-            </p>
           </motion.div>
 
           {/* Dashboard mockup */}
@@ -402,26 +381,13 @@ export default function LandingPage() {
               </div>
               <div>
                 <h2 className="font-display font-bold text-4xl sm:text-5xl text-[var(--text)] mb-4">
-                  Ready to grow?
+                  Be first in line.
                 </h2>
                 <p className="font-display text-[var(--muted)] text-lg leading-relaxed">
-                  Create your account, answer 8 questions, and get your own AI social media expert — plus a website builder and chatbot. Takes 5 minutes.
+                  Plou is in development. Join the waitlist and be the first to get your own AI social media expert, website builder, and chatbot — all for free.
                 </p>
               </div>
-              <Link
-                href="/signup"
-                className="font-display font-semibold text-white gradient-bg px-10 py-4 rounded-xl text-xl hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)]"
-              >
-                Start free →
-              </Link>
-
-              {/* Waitlist as a fallback for people who want to wait */}
-              <div className="w-full pt-6 border-t border-[var(--border)] flex flex-col items-center gap-3">
-                <p className="font-display text-xs text-[var(--muted)]">
-                  Not ready yet? Get notified when we add new features:
-                </p>
-                <WaitlistForm />
-              </div>
+              <WaitlistForm />
             </div>
           </FadeIn>
         </section>
@@ -430,16 +396,11 @@ export default function LandingPage() {
         <footer className="border-t border-[var(--border)] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-display font-bold text-xl gradient-text">plou</span>
           <p className="font-mono text-xs text-[var(--muted)]">
-            © {new Date().getFullYear()} Plou. All rights reserved.
+            © {new Date().getFullYear()} Plou. Coming soon.
           </p>
-          <div className="flex items-center gap-6">
-            <Link href="/login" className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">
-              Log in
-            </Link>
-            <Link href="/signup" className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">
-              Sign up
-            </Link>
-          </div>
+          <p className="font-mono text-xs text-[var(--muted)]">
+            Built for business owners who want to grow.
+          </p>
         </footer>
       </div>
     </div>

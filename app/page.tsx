@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
+import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -90,11 +91,11 @@ function FadeIn({
   )
 }
 
-// ─── Waitlist form ───────────────────────────────────────────────────────────
+// ─── Waitlist form (secondary CTA) ──────────────────────────────────────────
 
-function WaitlistForm({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
+function WaitlistForm() {
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,10 +107,8 @@ function WaitlistForm({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
       })
-      setStatus('done')
-    } catch {
-      setStatus('done') // show success regardless — don't block on infra
-    }
+    } catch { /* noop */ }
+    setStatus('done')
   }
 
   if (status === 'done') {
@@ -117,49 +116,40 @@ function WaitlistForm({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`flex items-center gap-3 px-5 py-4 rounded-xl bg-[rgba(61,224,135,0.1)] border border-[rgba(61,224,135,0.3)] ${
-          size === 'lg' ? 'max-w-lg' : 'max-w-sm'
-        } w-full`}
+        className="flex items-center gap-3 px-5 py-4 rounded-xl bg-[rgba(61,224,135,0.1)] border border-[rgba(61,224,135,0.3)] max-w-lg w-full"
       >
         <span className="text-[var(--green)] text-xl">✓</span>
         <div>
           <p className="font-display font-semibold text-[var(--text)] text-sm">You&apos;re on the list!</p>
-          <p className="font-mono text-xs text-[var(--muted)]">We&apos;ll reach out when Plou is ready for you.</p>
+          <p className="font-mono text-xs text-[var(--muted)]">We&apos;ll email you with updates.</p>
         </div>
       </motion.div>
     )
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`flex flex-col sm:flex-row gap-2 w-full ${size === 'lg' ? 'max-w-lg' : 'max-w-sm'}`}
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 w-full max-w-lg">
       <input
         type="email"
         required
         placeholder="your@email.com"
         value={email}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-        className={`flex-1 px-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all ${
-          size === 'lg' ? 'py-3.5 text-base' : 'py-3 text-sm'
-        }`}
+        className="flex-1 px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display text-sm placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all"
       />
       <motion.button
         type="submit"
         whileTap={{ scale: 0.97 }}
         disabled={status === 'loading'}
-        className={`gradient-bg text-white font-display font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 whitespace-nowrap shadow-lg shadow-[rgba(91,139,255,0.3)] ${
-          size === 'lg' ? 'px-7 py-3.5 text-base' : 'px-5 py-3 text-sm'
-        }`}
+        className="gradient-bg text-white font-display font-semibold text-sm rounded-xl px-5 py-3 hover:opacity-90 transition-opacity disabled:opacity-60 whitespace-nowrap shadow-lg shadow-[rgba(91,139,255,0.25)]"
       >
-        {status === 'loading' ? 'Joining...' : 'Get early access →'}
+        {status === 'loading' ? 'Joining...' : 'Join waitlist'}
       </motion.button>
     </form>
   )
 }
 
-// ─── Mock dashboard preview ───────────────────────────────────────────────────
+// ─── Mock dashboard preview ──────────────────────────────────────────────────
 
 function DashboardMockup() {
   return (
@@ -177,7 +167,7 @@ function DashboardMockup() {
       {/* Nav */}
       <div className="flex items-center justify-between px-5 py-3 bg-[var(--bg)] border-b border-[var(--border)]">
         <span className="font-display font-bold text-lg gradient-text">plou</span>
-        <div className="flex items-center gap-1 bg-[var(--surface)] border border-[var(--border)] p-1 rounded-xl">
+        <div className="hidden sm:flex items-center gap-1 bg-[var(--surface)] border border-[var(--border)] p-1 rounded-xl">
           {['💬 Chat', '💡 Ideas', '📈 Strategy', '🌐 Website', '🤖 Chatbot'].map((t, i) => (
             <span
               key={t}
@@ -194,31 +184,26 @@ function DashboardMockup() {
 
       {/* Chat area */}
       <div className="bg-[var(--bg)] px-5 py-5 flex flex-col gap-4">
-        {/* Plou message */}
         <div className="flex gap-3">
           <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-white text-xs shrink-0">P</div>
           <div className="max-w-[72%] px-4 py-3 rounded-2xl rounded-tl-sm bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display text-xs leading-relaxed">
-            Hey Sarah! I&apos;ve gone through everything you told me about Bloom Bakery and I&apos;m ready to help you grow on Instagram and TikTok. What do you want to work on first?
+            Hey Sarah! I&apos;ve gone through everything about Bloom Bakery. Ready to help you grow on Instagram and TikTok. What first?
           </div>
         </div>
-        {/* User message */}
         <div className="flex gap-3 flex-row-reverse">
           <div className="w-8 h-8 rounded-full bg-[var(--surface2)] border border-[var(--border)] flex items-center justify-center font-display text-xs text-[var(--muted)] shrink-0">You</div>
           <div className="max-w-[60%] px-4 py-3 rounded-2xl rounded-tr-sm gradient-bg text-white font-display text-xs leading-relaxed">
             Write me a caption for our new sourdough launch
           </div>
         </div>
-        {/* Plou response */}
         <div className="flex gap-3">
           <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-white text-xs shrink-0">P</div>
           <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tl-sm bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display text-xs leading-relaxed">
             <span className="text-[var(--accent)] font-semibold block mb-1">Ready to post ✓</span>
-            Three years of trial runs, 47 failed loaves, and one perfect crust. Our sourdough is finally here — and it&apos;s worth every early morning. Link in bio to pre-order. 🍞
-            <span className="text-[var(--muted)] block mt-1">#sourdough #artisanbread #bloombakery #freshbaked</span>
+            Three years of trial runs, 47 failed loaves, and one perfect crust. Our sourdough is finally here — and it&apos;s worth every early morning. Link in bio to pre-order.
+            <span className="text-[var(--muted)] block mt-1.5">#sourdough #artisanbread #bloombakery #freshbaked</span>
           </div>
         </div>
-
-        {/* Input area */}
         <div className="mt-1 flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2.5">
           <span className="flex-1 font-display text-xs text-[var(--muted)]">Ask Plou about Bloom Bakery...</span>
           <span className="gradient-bg text-white rounded-lg px-3 py-1.5 font-display text-xs font-semibold">Send</span>
@@ -245,12 +230,20 @@ export default function LandingPage() {
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-md">
         <span className="font-display font-bold text-2xl gradient-text">plou</span>
-        <a
-          href="#waitlist"
-          className="font-display font-semibold text-sm text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.2)]"
-        >
-          Get early access
-        </a>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="font-display font-medium text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors px-3 py-2"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/signup"
+            className="font-display font-semibold text-sm text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.2)]"
+          >
+            Start free
+          </Link>
+        </div>
       </nav>
 
       <div className="relative z-10">
@@ -266,7 +259,7 @@ export default function LandingPage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)]">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] animate-pulse" />
-              <span className="font-mono text-xs text-[var(--muted)]">Early access — join the waitlist</span>
+              <span className="font-mono text-xs text-[var(--muted)]">Now live — start for free</span>
             </div>
 
             {/* Headline */}
@@ -293,11 +286,25 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Waitlist form */}
-            <div id="waitlist" className="flex flex-col items-center gap-3 w-full">
-              <WaitlistForm size="lg" />
-              <p className="font-mono text-xs text-[var(--muted)]">Free to join. No spam. We&apos;ll email you when it&apos;s live.</p>
+            {/* Primary CTA */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 mt-1">
+              <Link
+                href="/signup"
+                className="font-display font-semibold text-white gradient-bg px-9 py-4 rounded-xl text-lg hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)]"
+              >
+                Start free — it takes 5 min →
+              </Link>
+              <a
+                href="#how-it-works"
+                className="font-display font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors px-6 py-4 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] bg-[var(--surface)]"
+              >
+                See how it works
+              </a>
             </div>
+
+            <p className="font-mono text-xs text-[var(--muted)]">
+              100% free · No credit card · Ready in 5 minutes
+            </p>
           </motion.div>
 
           {/* Dashboard mockup */}
@@ -341,7 +348,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── How it works ─────────────────────────────────────────────── */}
-        <section className="px-6 py-20 max-w-4xl mx-auto">
+        <section id="how-it-works" className="px-6 py-20 max-w-4xl mx-auto">
           <FadeIn className="text-center mb-14">
             <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-3">How it works</p>
             <h2 className="font-display font-bold text-4xl sm:text-5xl text-[var(--text)]">
@@ -353,7 +360,7 @@ export default function LandingPage() {
             {STEPS.map((step, i) => (
               <FadeIn key={step.num} delay={i * 0.1}>
                 <div className="flex items-start gap-6 p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors group">
-                  <span className="font-mono font-bold text-3xl gradient-text shrink-0 group-hover:opacity-100 transition-opacity">
+                  <span className="font-mono font-bold text-3xl gradient-text shrink-0">
                     {step.num}
                   </span>
                   <div>
@@ -386,7 +393,8 @@ export default function LandingPage() {
         {/* ── Final CTA ────────────────────────────────────────────────── */}
         <section className="px-6 py-28 text-center">
           <FadeIn>
-            <div className="max-w-2xl mx-auto flex flex-col items-center gap-8 p-10 sm:p-14 rounded-3xl bg-[var(--surface)] border border-[var(--border)]"
+            <div
+              className="max-w-2xl mx-auto flex flex-col items-center gap-8 p-10 sm:p-14 rounded-3xl bg-[var(--surface)] border border-[var(--border)]"
               style={{ boxShadow: '0 0 80px rgba(91,139,255,0.07)' }}
             >
               <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center font-display font-bold text-2xl text-white shadow-lg shadow-[rgba(91,139,255,0.4)]">
@@ -394,16 +402,26 @@ export default function LandingPage() {
               </div>
               <div>
                 <h2 className="font-display font-bold text-4xl sm:text-5xl text-[var(--text)] mb-4">
-                  Be first in line.
+                  Ready to grow?
                 </h2>
                 <p className="font-display text-[var(--muted)] text-lg leading-relaxed">
-                  Plou is in development. Join the waitlist and get early access when we launch — plus a free strategy session with your personalized AI.
+                  Create your account, answer 8 questions, and get your own AI social media expert — plus a website builder and chatbot. Takes 5 minutes.
                 </p>
               </div>
-              <WaitlistForm size="lg" />
-              <p className="font-mono text-xs text-[var(--muted)]">
-                No credit card. No spam. Cancel anytime.
-              </p>
+              <Link
+                href="/signup"
+                className="font-display font-semibold text-white gradient-bg px-10 py-4 rounded-xl text-xl hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)]"
+              >
+                Start free →
+              </Link>
+
+              {/* Waitlist as a fallback for people who want to wait */}
+              <div className="w-full pt-6 border-t border-[var(--border)] flex flex-col items-center gap-3">
+                <p className="font-display text-xs text-[var(--muted)]">
+                  Not ready yet? Get notified when we add new features:
+                </p>
+                <WaitlistForm />
+              </div>
             </div>
           </FadeIn>
         </section>
@@ -412,13 +430,17 @@ export default function LandingPage() {
         <footer className="border-t border-[var(--border)] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-display font-bold text-xl gradient-text">plou</span>
           <p className="font-mono text-xs text-[var(--muted)]">
-            © {new Date().getFullYear()} Plou. Coming soon.
+            © {new Date().getFullYear()} Plou. All rights reserved.
           </p>
-          <p className="font-mono text-xs text-[var(--muted)]">
-            Built for business owners who want to grow.
-          </p>
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">
+              Log in
+            </Link>
+            <Link href="/signup" className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">
+              Sign up
+            </Link>
+          </div>
         </footer>
-
       </div>
     </div>
   )

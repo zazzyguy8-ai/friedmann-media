@@ -125,7 +125,7 @@ function IdeaCard({ idea, index }: { idea: ContentIdea; index: number }) {
       </div>
       <div>
         <h3 className="font-display font-semibold text-[var(--text)] mb-1.5">{idea.title}</h3>
-        <p className="font-mono text-xs text-[var(--accent)] italic mb-2">"{idea.hook}"</p>
+        <p className="font-mono text-xs text-[var(--accent)] italic mb-2">&ldquo;{idea.hook}&rdquo;</p>
         <p className="font-display text-sm text-[var(--muted)] leading-relaxed">{idea.description}</p>
       </div>
     </motion.div>

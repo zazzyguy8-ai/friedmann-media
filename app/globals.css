@@ -84,3 +84,12 @@ body::before {
   background: rgba(91, 139, 255, 0.3);
   color: var(--text);
 }
+
+/* Hide scrollbar for tab bars */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

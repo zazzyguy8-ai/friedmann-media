@@ -1,281 +1,425 @@
 'use client'
 
-import Link from 'next/link'
-import { motion } from 'framer-motion'
+import React, { useState, useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
+
+// ─── Data ────────────────────────────────────────────────────────────────────
 
 const FEATURES = [
   {
-    icon: '🎯',
-    title: 'Deep business interview',
-    desc: 'Plou asks the right questions — your industry, audience, goals, platforms, and voice. Nothing generic.',
-  },
-  {
     icon: '🧠',
-    title: 'Plou becomes your expert',
-    desc: 'After learning your business, Plou rebuilds itself specifically for you. Every answer is tailored.',
-  },
-  {
-    icon: '📅',
-    title: 'Content ideas & calendar',
-    desc: 'Get platform-native post ideas, hooks, and captions generated for your specific audience.',
-  },
-  {
-    icon: '📈',
-    title: 'Personalized strategy',
-    desc: 'A full social media strategy — content pillars, posting schedule, 30-day plan — built for your business.',
+    title: 'Learns your business',
+    desc: 'Answer 8 questions. Plou builds a complete profile of your brand, audience, and goals — then rebuilds itself as your dedicated expert.',
+    tag: 'Setup',
   },
   {
     icon: '💬',
     title: 'Always-on AI advisor',
-    desc: 'Chat with Plou anytime. Ask for a caption, a campaign idea, or a competitor analysis. Instant answers.',
+    desc: 'Chat anytime. Ask for a caption, a campaign idea, a competitor breakdown, or a weekly posting plan. Instant, business-specific answers.',
+    tag: 'Social media',
   },
   {
-    icon: '🚀',
-    title: 'Platform expertise',
-    desc: 'Instagram, TikTok, LinkedIn, Twitter/X, Facebook, YouTube — Plou knows what works on each one.',
+    icon: '💡',
+    title: 'Content ideas on demand',
+    desc: 'Generate 6 platform-native content ideas tailored to your exact audience — Instagram Reels, LinkedIn posts, TikToks, and more.',
+    tag: 'Content',
+  },
+  {
+    icon: '📈',
+    title: 'Full social media strategy',
+    desc: 'Content pillars, posting schedule, quick wins, and a 30-day action plan. All specific to your business. Ready in seconds.',
+    tag: 'Strategy',
+  },
+  {
+    icon: '🌐',
+    title: 'Website builder',
+    desc: 'Describe your style. Plou generates a complete, professional website — real copy, real design, real code. Download and launch.',
+    tag: 'Web',
+  },
+  {
+    icon: '🤖',
+    title: 'AI chatbot for your site',
+    desc: 'A branded chat widget with pre-programmed answers about your business. Copy one line of code. Works on any website instantly.',
+    tag: 'Chatbot',
   },
 ]
 
 const STEPS = [
   {
-    number: '01',
+    num: '01',
     title: 'Tell Plou about your business',
-    desc: 'Answer a focused set of questions about your industry, audience, goals, and brand voice.',
+    desc: 'Answer 8 focused questions — your industry, audience, goals, platforms, and brand voice. Takes under 5 minutes.',
   },
   {
-    number: '02',
+    num: '02',
     title: 'Plou rebuilds itself for you',
-    desc: 'Plou uses your answers to become a dedicated AI social media expert — built around your business.',
+    desc: 'Plou uses everything you told it to become a dedicated AI expert — not a generic chatbot. Your brand, your audience, your goals.',
   },
   {
-    number: '03',
-    title: 'Get your strategy & start growing',
-    desc: 'Access content ideas, a personalized strategy, and a 24/7 AI advisor who knows your brand inside out.',
+    num: '03',
+    title: 'Grow, create, and automate',
+    desc: 'Chat with your AI advisor, generate content, launch a website, and deploy a chatbot. All from one place.',
   },
 ]
 
+const PLATFORMS = ['Instagram', 'TikTok', 'LinkedIn', 'Twitter / X', 'Facebook', 'YouTube', 'Pinterest']
+
+// ─── Fade-in wrapper ─────────────────────────────────────────────────────────
+
+function FadeIn({
+  children,
+  delay = 0,
+  className = '',
+}: {
+  children: React.ReactNode
+  delay?: number
+  className?: string
+}) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// ─── Waitlist form ───────────────────────────────────────────────────────────
+
+function WaitlistForm({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    setStatus('loading')
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      setStatus('done')
+    } catch {
+      setStatus('done') // show success regardless — don't block on infra
+    }
+  }
+
+  if (status === 'done') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className={`flex items-center gap-3 px-5 py-4 rounded-xl bg-[rgba(61,224,135,0.1)] border border-[rgba(61,224,135,0.3)] ${
+          size === 'lg' ? 'max-w-lg' : 'max-w-sm'
+        } w-full`}
+      >
+        <span className="text-[var(--green)] text-xl">✓</span>
+        <div>
+          <p className="font-display font-semibold text-[var(--text)] text-sm">You&apos;re on the list!</p>
+          <p className="font-mono text-xs text-[var(--muted)]">We&apos;ll reach out when Plou is ready for you.</p>
+        </div>
+      </motion.div>
+    )
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={`flex flex-col sm:flex-row gap-2 w-full ${size === 'lg' ? 'max-w-lg' : 'max-w-sm'}`}
+    >
+      <input
+        type="email"
+        required
+        placeholder="your@email.com"
+        value={email}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+        className={`flex-1 px-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display placeholder:text-[var(--muted)] outline-none focus:border-[var(--accent)] transition-all ${
+          size === 'lg' ? 'py-3.5 text-base' : 'py-3 text-sm'
+        }`}
+      />
+      <motion.button
+        type="submit"
+        whileTap={{ scale: 0.97 }}
+        disabled={status === 'loading'}
+        className={`gradient-bg text-white font-display font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 whitespace-nowrap shadow-lg shadow-[rgba(91,139,255,0.3)] ${
+          size === 'lg' ? 'px-7 py-3.5 text-base' : 'px-5 py-3 text-sm'
+        }`}
+      >
+        {status === 'loading' ? 'Joining...' : 'Get early access →'}
+      </motion.button>
+    </form>
+  )
+}
+
+// ─── Mock dashboard preview ───────────────────────────────────────────────────
+
+function DashboardMockup() {
+  return (
+    <div className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden border border-[var(--border)] shadow-2xl shadow-[rgba(0,0,0,0.5)]">
+      {/* Browser bar */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-[var(--surface2)] border-b border-[var(--border)]">
+        <span className="w-3 h-3 rounded-full bg-[rgba(255,91,91,0.5)]" />
+        <span className="w-3 h-3 rounded-full bg-[rgba(255,209,61,0.5)]" />
+        <span className="w-3 h-3 rounded-full bg-[rgba(61,224,135,0.5)]" />
+        <div className="flex-1 mx-3 px-3 py-1 rounded-md bg-[var(--surface)] border border-[var(--border)] font-mono text-xs text-[var(--muted)]">
+          app.plou.ai
+        </div>
+      </div>
+
+      {/* Nav */}
+      <div className="flex items-center justify-between px-5 py-3 bg-[var(--bg)] border-b border-[var(--border)]">
+        <span className="font-display font-bold text-lg gradient-text">plou</span>
+        <div className="flex items-center gap-1 bg-[var(--surface)] border border-[var(--border)] p-1 rounded-xl">
+          {['💬 Chat', '💡 Ideas', '📈 Strategy', '🌐 Website', '🤖 Chatbot'].map((t, i) => (
+            <span
+              key={t}
+              className={`font-display text-xs px-2.5 py-1.5 rounded-lg ${
+                i === 0 ? 'gradient-bg text-white font-semibold' : 'text-[var(--muted)]'
+              }`}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="w-8 h-8 rounded-full gradient-bg" />
+      </div>
+
+      {/* Chat area */}
+      <div className="bg-[var(--bg)] px-5 py-5 flex flex-col gap-4">
+        {/* Plou message */}
+        <div className="flex gap-3">
+          <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-white text-xs shrink-0">P</div>
+          <div className="max-w-[72%] px-4 py-3 rounded-2xl rounded-tl-sm bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display text-xs leading-relaxed">
+            Hey Sarah! I&apos;ve gone through everything you told me about Bloom Bakery and I&apos;m ready to help you grow on Instagram and TikTok. What do you want to work on first?
+          </div>
+        </div>
+        {/* User message */}
+        <div className="flex gap-3 flex-row-reverse">
+          <div className="w-8 h-8 rounded-full bg-[var(--surface2)] border border-[var(--border)] flex items-center justify-center font-display text-xs text-[var(--muted)] shrink-0">You</div>
+          <div className="max-w-[60%] px-4 py-3 rounded-2xl rounded-tr-sm gradient-bg text-white font-display text-xs leading-relaxed">
+            Write me a caption for our new sourdough launch
+          </div>
+        </div>
+        {/* Plou response */}
+        <div className="flex gap-3">
+          <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center font-display font-bold text-white text-xs shrink-0">P</div>
+          <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tl-sm bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-display text-xs leading-relaxed">
+            <span className="text-[var(--accent)] font-semibold block mb-1">Ready to post ✓</span>
+            Three years of trial runs, 47 failed loaves, and one perfect crust. Our sourdough is finally here — and it&apos;s worth every early morning. Link in bio to pre-order. 🍞
+            <span className="text-[var(--muted)] block mt-1">#sourdough #artisanbread #bloombakery #freshbaked</span>
+          </div>
+        </div>
+
+        {/* Input area */}
+        <div className="mt-1 flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-2.5">
+          <span className="flex-1 font-display text-xs text-[var(--muted)]">Ask Plou about Bloom Bakery...</span>
+          <span className="gradient-bg text-white rounded-lg px-3 py-1.5 font-display text-xs font-semibold">Send</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[var(--bg)] relative overflow-hidden">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-sm">
+    <div className="min-h-screen bg-[var(--bg)] overflow-x-hidden">
+
+      {/* Ambient glow */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(91,139,255,0.12) 0%, transparent 70%)',
+        }}
+      />
+
+      {/* ── Nav ─────────────────────────────────────────────────────────── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-md">
         <span className="font-display font-bold text-2xl gradient-text">plou</span>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="font-display font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors px-4 py-2"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="font-display font-semibold text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.25)]"
-          >
-            Start free
-          </Link>
-        </div>
+        <a
+          href="#waitlist"
+          className="font-display font-semibold text-sm text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.2)]"
+        >
+          Get early access
+        </a>
       </nav>
 
-      {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center gap-8 max-w-4xl mx-auto"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)]">
-            <span className="text-sm">✨</span>
-            <span className="font-mono text-xs text-[var(--muted)]">AI social media expert — built for your business</span>
-          </div>
+      <div className="relative z-10">
 
-          <h1 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl leading-tight text-[var(--text)]">
-            Meet <span className="gradient-text">Plou.</span>
-            <br />
-            Your social media{' '}
-            <span className="gradient-text">expert.</span>
-          </h1>
-
-          <p className="font-display text-xl text-[var(--muted)] max-w-2xl leading-relaxed">
-            Plou learns everything about your business — then rebuilds itself as your dedicated AI social media strategist, content creator, and growth advisor.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
-            <Link
-              href="/signup"
-              className="font-display font-semibold text-white gradient-bg px-8 py-4 rounded-xl text-lg hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)] flex items-center gap-2"
-            >
-              Talk to Plou — it&apos;s free →
-            </Link>
-            <a
-              href="#how-it-works"
-              className="font-display font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors px-6 py-4 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] bg-[var(--surface)]"
-            >
-              See how it works
-            </a>
-          </div>
-
-          <p className="font-mono text-xs text-[var(--muted)]">
-            100% free · No credit card · Ready in 5 minutes
-          </p>
-
-          {/* Preview card */}
+        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="w-full max-w-lg mt-4 p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-left"
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col items-center gap-7 max-w-4xl mx-auto"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full gradient-bg flex items-center justify-center text-white font-display font-bold text-sm">P</div>
-              <div>
-                <p className="font-display font-semibold text-[var(--text)] text-sm">Plou</p>
-                <p className="font-mono text-xs text-[var(--muted)]">Your AI social media expert</p>
-              </div>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] animate-pulse" />
+              <span className="font-mono text-xs text-[var(--muted)]">Early access — join the waitlist</span>
             </div>
-            <p className="font-display text-[var(--text)] text-sm leading-relaxed">
-              "Hi! I'm Plou. Tell me about your business and I'll build you a complete social media strategy — content ideas, posting schedule, captions, and a growth plan tailored exactly to your brand."
+
+            {/* Headline */}
+            <h1 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl leading-[1.08] text-[var(--text)] tracking-tight">
+              One AI that runs
+              <br />
+              your{' '}
+              <span className="gradient-text">entire online</span>
+              <br />
+              presence.
+            </h1>
+
+            {/* Subtext */}
+            <p className="font-display text-lg sm:text-xl text-[var(--muted)] max-w-2xl leading-relaxed">
+              Tell Plou about your business. It learns your brand, audience, and goals — then becomes your dedicated social media strategist, website builder, and AI chatbot.
             </p>
-            <div className="mt-4 flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--surface2)] border border-[var(--border)]">
-              <span className="font-display text-sm text-[var(--muted)] flex-1">Start by telling Plou about your business...</span>
-              <span className="text-[var(--accent)]">→</span>
+
+            {/* Feature pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {['Social media strategy', 'Content ideas', 'AI chat advisor', 'Website builder', 'Chatbot for your site'].map((f) => (
+                <span key={f} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--surface)] border border-[var(--border)] font-display text-xs text-[var(--muted)]">
+                  <span className="text-[var(--green)] font-bold">✓</span> {f}
+                </span>
+              ))}
+            </div>
+
+            {/* Waitlist form */}
+            <div id="waitlist" className="flex flex-col items-center gap-3 w-full">
+              <WaitlistForm size="lg" />
+              <p className="font-mono text-xs text-[var(--muted)]">Free to join. No spam. We&apos;ll email you when it&apos;s live.</p>
             </div>
           </motion.div>
-        </motion.div>
-      </section>
 
-      {/* How it works */}
-      <section id="how-it-works" className="px-6 py-24 max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-4">How it works</p>
-          <h2 className="font-display font-bold text-4xl text-[var(--text)] mb-4">
-            Three steps to your own AI expert
-          </h2>
-          <p className="font-display text-[var(--muted)] text-lg max-w-lg mx-auto">
-            Plou is not a generic tool. It becomes your business.
-          </p>
-        </motion.div>
+          {/* Dashboard mockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-16 w-full max-w-4xl mx-auto px-2"
+          >
+            <DashboardMockup />
+          </motion.div>
+        </section>
 
-        <div className="flex flex-col gap-6">
-          {STEPS.map((step, i) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-              className="flex items-start gap-6 p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
-            >
-              <span className="font-mono text-3xl font-bold gradient-text shrink-0">{step.number}</span>
-              <div>
-                <h3 className="font-display font-semibold text-xl text-[var(--text)] mb-2">{step.title}</h3>
-                <p className="font-display text-[var(--muted)] leading-relaxed">{step.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+        {/* ── Features ─────────────────────────────────────────────────── */}
+        <section className="px-6 py-24 max-w-6xl mx-auto">
+          <FadeIn className="text-center mb-14">
+            <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-3">Everything in one place</p>
+            <h2 className="font-display font-bold text-4xl sm:text-5xl text-[var(--text)]">
+              Built for business owners,<br />not marketers
+            </h2>
+          </FadeIn>
 
-      {/* Features */}
-      <section className="px-6 py-12 max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-4">What Plou does</p>
-          <h2 className="font-display font-bold text-4xl text-[var(--text)]">
-            Everything your social media needs
-          </h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
-            >
-              <span className="text-3xl block mb-4">{f.icon}</span>
-              <h3 className="font-display font-semibold text-lg text-[var(--text)] mb-2">{f.title}</h3>
-              <p className="font-display text-[var(--muted)] text-sm leading-relaxed">{f.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Platforms */}
-      <section className="px-6 py-16 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
-        >
-          <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-6">Platforms covered</p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {['Instagram', 'TikTok', 'LinkedIn', 'Twitter / X', 'Facebook', 'YouTube', 'Pinterest'].map((p) => (
-              <span
-                key={p}
-                className="px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)] font-display text-sm text-[var(--muted)]"
-              >
-                {p}
-              </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {FEATURES.map((f, i) => (
+              <FadeIn key={f.title} delay={i * 0.07}>
+                <div className="h-full p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors flex flex-col gap-4">
+                  <div className="flex items-start justify-between">
+                    <span className="text-4xl">{f.icon}</span>
+                    <span className="font-mono text-xs text-[var(--muted)] px-2 py-1 rounded-full bg-[var(--surface2)] border border-[var(--border)]">
+                      {f.tag}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-display font-semibold text-lg text-[var(--text)] mb-1.5">{f.title}</h3>
+                    <p className="font-display text-sm text-[var(--muted)] leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              </FadeIn>
             ))}
           </div>
-        </motion.div>
-      </section>
+        </section>
 
-      {/* Final CTA */}
-      <section className="px-6 py-24 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto p-12 rounded-2xl bg-[var(--surface)] border border-[var(--border)]"
-        >
-          <h2 className="font-display font-bold text-4xl text-[var(--text)] mb-4">
-            Ready to grow your business online?
-          </h2>
-          <p className="font-display text-[var(--muted)] text-lg mb-8">
-            Tell Plou about your business. It takes 5 minutes. The results last forever.
-          </p>
-          <Link
-            href="/signup"
-            className="inline-flex items-center gap-2 font-display font-semibold text-white gradient-bg px-10 py-4 rounded-xl text-xl hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)]"
-          >
-            Meet Plou — it&apos;s free →
-          </Link>
-          <p className="font-mono text-xs text-[var(--muted)] mt-6">
-            100% free · No credit card required · Ready in 5 minutes
-          </p>
-        </motion.div>
-      </section>
+        {/* ── How it works ─────────────────────────────────────────────── */}
+        <section className="px-6 py-20 max-w-4xl mx-auto">
+          <FadeIn className="text-center mb-14">
+            <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-3">How it works</p>
+            <h2 className="font-display font-bold text-4xl sm:text-5xl text-[var(--text)]">
+              Ready in 5 minutes
+            </h2>
+          </FadeIn>
 
-      {/* Footer */}
-      <footer className="border-t border-[var(--border)] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span className="font-display font-bold text-xl gradient-text">plou</span>
-        <p className="font-mono text-xs text-[var(--muted)]">
-          © {new Date().getFullYear()} Plou. All rights reserved.
-        </p>
-        <div className="flex items-center gap-6">
-          <Link href="/privacy" className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">
-            Privacy
-          </Link>
-          <Link href="/terms" className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors">
-            Terms
-          </Link>
-        </div>
-      </footer>
+          <div className="flex flex-col gap-4">
+            {STEPS.map((step, i) => (
+              <FadeIn key={step.num} delay={i * 0.1}>
+                <div className="flex items-start gap-6 p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors group">
+                  <span className="font-mono font-bold text-3xl gradient-text shrink-0 group-hover:opacity-100 transition-opacity">
+                    {step.num}
+                  </span>
+                  <div>
+                    <h3 className="font-display font-semibold text-xl text-[var(--text)] mb-1.5">{step.title}</h3>
+                    <p className="font-display text-[var(--muted)] leading-relaxed">{step.desc}</p>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Platforms ────────────────────────────────────────────────── */}
+        <section className="px-6 py-16 text-center">
+          <FadeIn>
+            <p className="font-mono text-xs text-[var(--muted)] uppercase tracking-widest mb-6">Platform expertise</p>
+            <div className="flex flex-wrap items-center justify-center gap-2.5 max-w-2xl mx-auto">
+              {PLATFORMS.map((p) => (
+                <span
+                  key={p}
+                  className="px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)] font-display text-sm text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--text)] transition-all cursor-default"
+                >
+                  {p}
+                </span>
+              ))}
+            </div>
+          </FadeIn>
+        </section>
+
+        {/* ── Final CTA ────────────────────────────────────────────────── */}
+        <section className="px-6 py-28 text-center">
+          <FadeIn>
+            <div className="max-w-2xl mx-auto flex flex-col items-center gap-8 p-10 sm:p-14 rounded-3xl bg-[var(--surface)] border border-[var(--border)]"
+              style={{ boxShadow: '0 0 80px rgba(91,139,255,0.07)' }}
+            >
+              <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center font-display font-bold text-2xl text-white shadow-lg shadow-[rgba(91,139,255,0.4)]">
+                P
+              </div>
+              <div>
+                <h2 className="font-display font-bold text-4xl sm:text-5xl text-[var(--text)] mb-4">
+                  Be first in line.
+                </h2>
+                <p className="font-display text-[var(--muted)] text-lg leading-relaxed">
+                  Plou is in development. Join the waitlist and get early access when we launch — plus a free strategy session with your personalized AI.
+                </p>
+              </div>
+              <WaitlistForm size="lg" />
+              <p className="font-mono text-xs text-[var(--muted)]">
+                No credit card. No spam. Cancel anytime.
+              </p>
+            </div>
+          </FadeIn>
+        </section>
+
+        {/* ── Footer ───────────────────────────────────────────────────── */}
+        <footer className="border-t border-[var(--border)] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <span className="font-display font-bold text-xl gradient-text">plou</span>
+          <p className="font-mono text-xs text-[var(--muted)]">
+            © {new Date().getFullYear()} Plou. Coming soon.
+          </p>
+          <p className="font-mono text-xs text-[var(--muted)]">
+            Built for business owners who want to grow.
+          </p>
+        </footer>
+
+      </div>
     </div>
   )
 }

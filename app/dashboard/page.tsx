@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createBrowserClient } from '@/lib/supabase'
 import type { BusinessProfile, Message, ContentIdea } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -177,24 +176,13 @@ export default function DashboardPage() {
 
   // ── Load data ─────────────────────────────────────────────────────────────
 
-  const loadData = useCallback(async () => {
-    const supabase = createBrowserClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) { router.push('/login'); return }
-
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-
-    if (profileError || !profileData) { router.push('/onboarding'); return }
-    if (!profileData.onboarding_completed) { router.push('/onboarding'); return }
+  const loadData = useCallback(() => {
+    const stored = localStorage.getItem('plou_business')
+    if (!stored) { router.push('/onboarding'); return }
 
     let businessProfile: BusinessProfile
     try {
-      businessProfile = JSON.parse(profileData.goal || '') as BusinessProfile
+      businessProfile = JSON.parse(stored) as BusinessProfile
     } catch {
       router.push('/onboarding')
       return
@@ -206,10 +194,10 @@ export default function DashboardPage() {
     }
 
     setProfile(businessProfile)
-    setOwnerName(profileData.name || '')
+    setOwnerName(businessProfile.ownerName || '')
     setLoading(false)
 
-    const firstName = (profileData.name || '').split(' ')[0] || 'there'
+    const firstName = (businessProfile.ownerName || '').split(' ')[0] || 'there'
     const platformsPreview = businessProfile.platforms.slice(0, 2).join(' and ')
     const more = businessProfile.platforms.length > 2 ? ' and more' : ''
 
@@ -249,7 +237,7 @@ What do you want to tackle first? I can write captions, build a weekly content p
       const res = await fetch('/api/plou', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages }),
+        body: JSON.stringify({ messages: updatedMessages, businessProfile: profile }),
       })
       const data = await res.json()
       if (data.content) {
@@ -270,7 +258,11 @@ What do you want to tackle first? I can write captions, build a weekly content p
   const generateIdeas = async () => {
     setIdeasLoading(true)
     try {
-      const res = await fetch('/api/plou-ideas', { method: 'POST' })
+      const res = await fetch('/api/plou-ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessProfile: profile }),
+      })
       const data = await res.json()
       if (data.ideas) {
         setIdeas(data.ideas)
@@ -288,7 +280,11 @@ What do you want to tackle first? I can write captions, build a weekly content p
   const generateStrategy = async () => {
     setStrategyLoading(true)
     try {
-      const res = await fetch('/api/plou-strategy', { method: 'POST' })
+      const res = await fetch('/api/plou-strategy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessProfile: profile }),
+      })
       const data = await res.json()
       if (data.strategy) {
         setStrategy(data.strategy)
@@ -310,7 +306,7 @@ What do you want to tackle first? I can write captions, build a weekly content p
       const res = await fetch('/api/plou-website', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ siteType, style: siteStyle }),
+        body: JSON.stringify({ siteType, style: siteStyle, businessProfile: profile }),
       })
       const data = await res.json()
       if (data.html) {
@@ -349,7 +345,7 @@ What do you want to tackle first? I can write captions, build a weekly content p
       const res = await fetch('/api/plou-chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ botPersonality }),
+        body: JSON.stringify({ botPersonality, businessProfile: profile }),
       })
       const data = await res.json()
       if (data.html) {
@@ -371,9 +367,8 @@ What do you want to tackle first? I can write captions, build a weekly content p
 
   // ── Logout ────────────────────────────────────────────────────────────────
 
-  const handleLogout = async () => {
-    const supabase = createBrowserClient()
-    await supabase.auth.signOut()
+  const handleReset = () => {
+    localStorage.removeItem('plou_business')
     router.push('/')
   }
 
@@ -460,10 +455,10 @@ What do you want to tackle first? I can write captions, build a weekly content p
                   Update business profile
                 </button>
                 <button
-                  onClick={handleLogout}
+                  onClick={handleReset}
                   className="w-full px-4 py-3 text-left font-display text-sm text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--surface2)] transition-colors"
                 >
-                  Log out
+                  Start over
                 </button>
               </motion.div>
             )}

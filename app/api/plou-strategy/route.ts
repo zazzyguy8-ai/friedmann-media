@@ -1,31 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createServerClient } from '@/lib/supabase-server'
 import { buildStrategySystemPrompt } from '@/lib/plou'
 import type { BusinessProfile } from '@/types'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    const supabase = createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const { businessProfile } = await req.json() as { businessProfile: BusinessProfile }
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!businessProfile) {
+      return NextResponse.json({ error: 'Business profile not found' }, { status: 400 })
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('goal')
-      .eq('id', user.id)
-      .single()
-
-    if (!profile?.goal) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 })
-    }
-
-    const businessProfile: BusinessProfile = JSON.parse(profile.goal)
     const systemPrompt = buildStrategySystemPrompt(businessProfile)
 
     const response = await anthropic.messages.create({

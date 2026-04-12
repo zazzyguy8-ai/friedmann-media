@@ -119,6 +119,15 @@ export default function ChallengeCard({
           flex flex-col gap-6
         `}
       >
+        <div className="flex justify-start">
+          <span
+            className="font-display font-bold text-sm text-[var(--text)]"
+            style={{ letterSpacing: '0.45em', textTransform: 'uppercase' }}
+          >
+            H E R E.
+          </span>
+        </div>
+
         <span className="font-mono text-xs uppercase tracking-widest text-[var(--muted)]">
           Today&apos;s Challenge
         </span>

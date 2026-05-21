@@ -1,25 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #080a0f;
-  --surface: #0f1218;
-  --surface2: #161c26;
-  --border: #1e2736;
-  --accent: #5b8bff;
-  --accent2: #9b6fff;
-  --green: #3de087;
-  --red: #ff5b5b;
-  --yellow: #ffd166;
-  --text: #e8edf5;
-  --muted: #5a6a82;
+  --obsidian: #050507;
+  --surface: #0a0a12;
+  --surface2: #0f0f1a;
+  --surface3: #141422;
+  --silver: #c8cfe0;
+  --silver-dim: #7a8299;
+  --gold: #c9a96e;
+  --gold-bright: #e8c87a;
+  --gold-dim: #8a6e3a;
+  --crimson: #6a0018;
+  --crimson-glow: #9a1a32;
+  --purple-deep: #1a0a2e;
+  --purple-glow: #3d1f6e;
+  --border: rgba(200, 207, 224, 0.07);
+  --border-silver: rgba(200, 207, 224, 0.15);
+  --border-gold: rgba(201, 169, 110, 0.25);
+  --glow-gold: rgba(201, 169, 110, 0.12);
+  --glow-silver: rgba(200, 207, 224, 0.1);
+  --glow-crimson: rgba(154, 26, 50, 0.2);
+  --text: #d0d5e2;
+  --text-dim: #606070;
+  --text-muted: #3a3a4a;
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -27,60 +40,217 @@ html {
 }
 
 body {
-  background-color: var(--bg);
+  background-color: var(--obsidian);
   color: var(--text);
-  font-family: 'Syne', sans-serif;
+  font-family: 'EB Garamond', serif;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
 }
 
-body::before {
+/* Noise texture overlay */
+body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
+  z-index: 9998;
+  opacity: 0.25;
 }
 
-.font-display {
-  font-family: 'Syne', sans-serif;
-}
+/* Typography */
+.font-cinzel { font-family: 'Cinzel', serif; }
+.font-cinzel-decorative { font-family: 'Cinzel Decorative', serif; }
+.font-garamond { font-family: 'EB Garamond', serif; }
+.font-mono { font-family: 'DM Mono', monospace; }
 
-.font-mono {
-  font-family: 'DM Mono', monospace;
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+/* Gradient texts */
+.text-silver-gradient {
+  background: linear-gradient(135deg, #e0e4f0 0%, #9aa0b8 40%, #e0e4f0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gradient-bg {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f0d090 0%, #c9a96e 40%, #e8c87a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-crimson-gradient {
+  background: linear-gradient(135deg, #d04060 0%, #8a1428 50%, #c03050 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effects */
+.glow-gold {
+  box-shadow: 0 0 30px rgba(201, 169, 110, 0.18), 0 0 60px rgba(201, 169, 110, 0.08), inset 0 0 30px rgba(201, 169, 110, 0.04);
+}
+
+.glow-silver {
+  box-shadow: 0 0 30px rgba(200, 207, 224, 0.12), 0 0 60px rgba(200, 207, 224, 0.06);
+}
+
+.glow-crimson {
+  box-shadow: 0 0 30px rgba(154, 26, 50, 0.25), 0 0 60px rgba(154, 26, 50, 0.12);
+}
+
+.glow-text-gold {
+  text-shadow: 0 0 20px rgba(201, 169, 110, 0.5), 0 0 40px rgba(201, 169, 110, 0.2);
+}
+
+.glow-text-silver {
+  text-shadow: 0 0 20px rgba(200, 207, 224, 0.4), 0 0 40px rgba(200, 207, 224, 0.15);
+}
+
+/* Letter spacing */
+.tracking-arcane { letter-spacing: 0.25em; }
+.tracking-ritual { letter-spacing: 0.18em; }
+.tracking-ancient { letter-spacing: 0.35em; }
+.tracking-wide-xl { letter-spacing: 0.12em; }
+
+/* Animations */
+@keyframes runeRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes runeCounterRotate {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.5; filter: blur(0px); }
+  50% { opacity: 1; filter: blur(1px); }
+}
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes particleDrift {
+  0% { transform: translateY(0px) translateX(0px); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.2; }
+  100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+}
+
+@keyframes veilIn {
+  0% { opacity: 0; transform: scale(1.05); filter: blur(8px); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+}
+
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(201, 169, 110, 0.15); }
+  50% { border-color: rgba(201, 169, 110, 0.4); }
+}
+
+@keyframes textReveal {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0% 0 0); }
+}
+
+.animate-rune-rotate { animation: runeRotate 25s linear infinite; }
+.animate-rune-counter { animation: runeCounterRotate 18s linear infinite; }
+.animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+.animate-float { animation: floatUpDown 7s ease-in-out infinite; }
+.animate-veil-in { animation: veilIn 1.2s ease-out forwards; }
+.animate-border-pulse { animation: borderPulse 4s ease-in-out infinite; }
+
+/* Shimmer button */
+.btn-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Mystic divider */
+.divider-arcane {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.3), transparent);
+}
+
+.divider-silver {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 207, 224, 0.15), transparent);
+}
+
+/* Card surfaces */
+.card-arcane {
+  background: linear-gradient(135deg, rgba(10, 10, 18, 0.9) 0%, rgba(15, 15, 26, 0.95) 100%);
+  border: 1px solid rgba(200, 207, 224, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+.card-gold {
+  background: linear-gradient(135deg, rgba(10, 10, 18, 0.95) 0%, rgba(20, 15, 5, 0.95) 100%);
+  border: 1px solid rgba(201, 169, 110, 0.2);
+}
+
+/* Ritual circle */
+.ritual-circle {
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  position: relative;
+}
+
+/* Input arcane */
+.input-arcane {
+  background: rgba(10, 10, 18, 0.8);
+  border: 1px solid rgba(200, 207, 224, 0.1);
+  color: var(--text);
+  font-family: 'EB Garamond', serif;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-arcane:focus {
+  outline: none;
+  border-color: rgba(201, 169, 110, 0.4);
+  box-shadow: 0 0 15px rgba(201, 169, 110, 0.1);
+}
+
+.input-arcane::placeholder {
+  color: var(--text-dim);
+  font-style: italic;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--obsidian); }
+::-webkit-scrollbar-thumb { background: rgba(200, 207, 224, 0.08); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 169, 110, 0.2); }
 
 /* Selection */
-::selection {
-  background: rgba(91, 139, 255, 0.3);
-  color: var(--text);
+::selection { background: rgba(201, 169, 110, 0.15); color: var(--text); }
+
+/* Progress bar ritual */
+.progress-arcane {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-bright) 100%);
+  box-shadow: 0 0 10px rgba(201, 169, 110, 0.4);
 }
+
+/* Archetype badge colors */
+.archetype-shadow-scholar { --archetype-color: #4a6080; --archetype-glow: rgba(74, 96, 128, 0.3); }
+.archetype-lunar-seer { --archetype-color: #7080a0; --archetype-glow: rgba(112, 128, 160, 0.3); }
+.archetype-ashborn-monarch { --archetype-color: #c04020; --archetype-glow: rgba(192, 64, 32, 0.3); }
+.archetype-silent-alchemist { --archetype-color: #608040; --archetype-glow: rgba(96, 128, 64, 0.3); }
+.archetype-storm-vessel { --archetype-color: #6060c0; --archetype-glow: rgba(96, 96, 192, 0.3); }
+.archetype-void-oracle { --archetype-color: #303050; --archetype-glow: rgba(48, 48, 80, 0.3); }
+.archetype-crimson-saint { --archetype-color: #a02040; --archetype-glow: rgba(160, 32, 64, 0.3); }

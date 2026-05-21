@@ -1,149 +1,125 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { createBrowserClient } from '@/lib/supabase'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
+import { createBrowserClientInstance as createBrowserClient } from '@/lib/supabase-browser'
 
 export default function LoginPage() {
   const router = useRouter()
+  const supabase = createBrowserClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
-  const [forgotSent, setForgotSent] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleLogin = async (e: React.FormEvent) => {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
-    const newErrors: Record<string, string> = {}
-    if (!email) newErrors.email = 'Email is required'
-    if (!password) newErrors.password = 'Password is required'
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
     setLoading(true)
-    setErrors({})
+    setError('')
 
-    const supabase = createBrowserClient()
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (error) {
-      setErrors({ global: error.message })
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+    if (loginError) {
+      setError('The archive does not recognise this key.')
       setLoading(false)
       return
     }
 
-    if (!data.user) {
-      setErrors({ global: 'Login failed. Please try again.' })
-      setLoading(false)
-      return
-    }
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('archetype_key')
+        .eq('id', data.user.id)
+        .single()
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', data.user.id)
-      .single()
-
-    if (!profile?.onboarding_completed) {
-      router.push('/onboarding')
-      return
-    }
-
-    router.push('/dashboard')
-  }
-
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setErrors({ email: 'Enter your email above first' })
-      return
-    }
-    const supabase = createBrowserClient()
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    })
-    if (error) {
-      setErrors({ global: error.message })
-    } else {
-      setForgotSent(true)
+      router.push(profile?.archetype_key ? '/portal' : '/initiation')
     }
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex flex-col items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-obsidian flex flex-col items-center justify-center px-6 relative overflow-hidden">
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 50% 40% at 50% 30%, rgba(20,10,40,0.4) 0%, transparent 70%)' }}
+      />
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-5 z-10">
+        <Link href="/" className="font-cinzel-decorative text-gold text-sm tracking-arcane glow-text-gold">ARCANUM</Link>
+        <Link href="/signup" className="font-cinzel text-[var(--silver-dim)] text-xs tracking-ritual hover:text-silver transition-colors">
+          Begin initiation
+        </Link>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
+        transition={{ duration: 1.2 }}
+        className="relative z-10 w-full max-w-sm"
       >
         <div className="text-center mb-8">
-          <Link href="/" className="font-display font-bold text-3xl gradient-text inline-block mb-6">
-            plou
-          </Link>
-          <h1 className="font-display font-bold text-3xl text-[var(--text)]">Welcome back</h1>
-          <p className="font-display text-[var(--muted)] mt-2">Keep your streak alive</p>
-        </div>
-
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 flex flex-col gap-5">
-          {errors.global && (
-            <div className="px-4 py-3 rounded-xl bg-[rgba(255,91,91,0.1)] border border-[rgba(255,91,91,0.2)] text-[var(--red)] text-sm font-display">
-              {errors.global}
-            </div>
-          )}
-
-          {forgotSent && (
-            <div className="px-4 py-3 rounded-xl bg-[rgba(61,224,135,0.1)] border border-[rgba(61,224,135,0.2)] text-[var(--green)] text-sm font-display">
-              Password reset link sent! Check your email.
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <Input
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              autoComplete="email"
-            />
-            <div className="flex flex-col gap-1.5">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                error={errors.password}
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="self-end font-display text-xs text-[var(--muted)] hover:text-[var(--accent)] transition-colors"
-              >
-                Forgot password?
-              </button>
-            </div>
-
-            <Button type="submit" variant="primary" size="lg" fullWidth loading={loading} className="mt-2">
-              Log in →
-            </Button>
-          </form>
-
-          <p className="text-center font-display text-sm text-[var(--muted)]">
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-[var(--accent)] hover:underline">
-              Sign up free
-            </Link>
+          <div className="font-cinzel-decorative text-gold text-4xl glow-text-gold mb-4 animate-pulse-glow">☽</div>
+          <h1 className="font-cinzel text-silver text-xl tracking-ritual mb-2" style={{ letterSpacing: '0.15em' }}>
+            Return to the Archive
+          </h1>
+          <p className="font-garamond text-[var(--silver-dim)] text-base italic">
+            The archive remembers you.
           </p>
         </div>
+
+        <div className="divider-arcane mb-8" />
+
+        <form onSubmit={handleLogin} className="flex flex-col gap-5">
+          <div>
+            <label className="font-mono text-[var(--silver-dim)] text-xs tracking-ritual block mb-2">EMAIL ADDRESS</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Your address"
+              className="input-arcane w-full px-4 py-3 text-base"
+              required
+              autoComplete="email"
+            />
+          </div>
+          <div>
+            <label className="font-mono text-[var(--silver-dim)] text-xs tracking-ritual block mb-2">PASSKEY</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your key"
+              className="input-arcane w-full px-4 py-3 text-base"
+              required
+              autoComplete="current-password"
+            />
+          </div>
+
+          {error && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="font-garamond text-[var(--crimson-glow)] text-sm italic text-center">
+              {error}
+            </motion.p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="font-cinzel text-xs tracking-arcane px-8 py-4 border border-[var(--border-gold)] text-gold hover:bg-[rgba(201,169,110,0.08)] transition-all glow-gold disabled:opacity-40 mt-2"
+            style={{ letterSpacing: '0.22em' }}
+          >
+            {loading ? 'READING THE KEY...' : 'ENTER THE ARCHIVE'}
+          </button>
+        </form>
+
+        <div className="divider-arcane mt-8 mb-6" />
+        <p className="font-garamond text-[var(--text-dim)] text-sm italic text-center">
+          No account?{' '}
+          <Link href="/signup" className="text-[var(--silver-dim)] hover:text-silver underline transition-colors">
+            Begin the initiation.
+          </Link>
+        </p>
       </motion.div>
     </div>
   )

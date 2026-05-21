@@ -1,155 +1,130 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { createBrowserClient } from '@/lib/supabase'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
+import { createBrowserClientInstance as createBrowserClient } from '@/lib/supabase-browser'
 
 export default function SignupPage() {
   const router = useRouter()
+  const supabase = createBrowserClient()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {}
-    if (!email) newErrors.email = 'Email is required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Invalid email'
-    if (!password) newErrors.password = 'Password is required'
-    else if (password.length < 8) newErrors.password = 'Password must be at least 8 characters'
-    if (!confirmPassword) newErrors.confirmPassword = 'Please confirm your password'
-    else if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match'
-    return newErrors
-  }
-
-  const handleSignup = async (e: React.FormEvent) => {
+  async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
-    const validationErrors = validate()
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      return
-    }
-
+    if (!name || !email || !password) return
     setLoading(true)
-    setErrors({})
+    setError('')
 
-    const supabase = createBrowserClient()
-
-    // Race signup against a timeout
-    const signUpPromise = supabase.auth.signUp({ email, password })
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Request timed out. Please try again.')), 10000)
-    )
-
-    let signUpResult
     try {
-      signUpResult = await Promise.race([signUpPromise, timeoutPromise])
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong'
-      setErrors({ global: message })
-      setLoading(false)
-      return
-    }
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      })
+      if (signUpError) throw signUpError
 
-    if (signUpResult.error) {
-      // If user already exists, try signing in directly
-      if (signUpResult.error.message.includes('already registered')) {
+      if (signUpData.user) {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-        if (!signInError) {
-          router.push('/onboarding')
-          return
-        }
+        if (signInError) throw signInError
+
+        await supabase.from('profiles').upsert({
+          id: signUpData.user.id,
+          name,
+          xp: 0,
+          level: 1,
+          streak: 0,
+          is_premium: false,
+        })
+        router.push('/initiation')
       }
-      setErrors({ global: signUpResult.error.message })
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'The archive is not yet ready for you.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    // Try to sign in immediately
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-    if (!signInError) {
-      router.push('/onboarding')
-      return
-    }
-
-    // If sign in fails (email not confirmed), send to login with message
-    setErrors({ global: 'Account created! Please log in.' })
-    setLoading(false)
-    router.push('/login')
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex flex-col items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-obsidian flex flex-col items-center justify-center px-6 relative overflow-hidden">
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 50% 40% at 50% 30%, rgba(40,20,5,0.5) 0%, transparent 70%)' }}
+      />
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-5 z-10">
+        <Link href="/" className="font-cinzel-decorative text-gold text-sm tracking-arcane glow-text-gold">ARCANUM</Link>
+        <Link href="/login" className="font-cinzel text-[var(--silver-dim)] text-xs tracking-ritual hover:text-silver transition-colors">
+          Already initiated?
+        </Link>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
+        transition={{ duration: 1.2 }}
+        className="relative z-10 w-full max-w-sm"
       >
         <div className="text-center mb-8">
-          <Link href="/" className="font-display font-bold text-3xl gradient-text inline-block mb-6">
-            plou
-          </Link>
-          <h1 className="font-display font-bold text-3xl text-[var(--text)]">Create your account</h1>
-          <p className="font-display text-[var(--muted)] mt-2">Free forever. Start in 60 seconds.</p>
-        </div>
-
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 flex flex-col gap-5">
-          {errors.global && (
-            <div className="px-4 py-3 rounded-xl bg-[rgba(255,91,91,0.1)] border border-[rgba(255,91,91,0.2)] text-[var(--red)] text-sm font-display">
-              {errors.global}
-            </div>
-          )}
-
-          <form onSubmit={handleSignup} className="flex flex-col gap-4">
-            <Input
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              autoComplete="email"
-            />
-            <Input
-              label="Password"
-              type="password"
-              placeholder="At least 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-              autoComplete="new-password"
-            />
-            <Input
-              label="Confirm password"
-              type="password"
-              placeholder="Repeat your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={errors.confirmPassword}
-              autoComplete="new-password"
-            />
-
-            <Button type="submit" variant="primary" size="lg" fullWidth loading={loading} className="mt-2">
-              Create account →
-            </Button>
-          </form>
-
-          <p className="text-center font-display text-sm text-[var(--muted)]">
-            Already have an account?{' '}
-            <Link href="/login" className="text-[var(--accent)] hover:underline">
-              Log in
-            </Link>
+          <div className="font-cinzel-decorative text-gold text-4xl glow-text-gold mb-4 animate-pulse-glow">◈</div>
+          <h1 className="font-cinzel text-silver text-xl tracking-ritual mb-2" style={{ letterSpacing: '0.15em' }}>
+            Begin Initiation
+          </h1>
+          <p className="font-garamond text-[var(--silver-dim)] text-base italic">
+            The archive requires only your name and a key.
           </p>
         </div>
 
-        <p className="text-center font-mono text-xs text-[var(--muted)] mt-6">
-          100% free · No credit card required · Start in 60 seconds
+        <div className="divider-arcane mb-8" />
+
+        <form onSubmit={handleSignup} className="flex flex-col gap-5">
+          {[
+            { label: 'YOUR NAME', value: name, set: setName, type: 'text', placeholder: 'What do you call yourself?', auto: 'name' },
+            { label: 'EMAIL ADDRESS', value: email, set: setEmail, type: 'email', placeholder: 'Your private address', auto: 'email' },
+            { label: 'PASSKEY', value: password, set: setPassword, type: 'password', placeholder: 'Minimum 8 characters', auto: 'new-password' },
+          ].map(({ label, value, set, type, placeholder, auto }) => (
+            <div key={label}>
+              <label className="font-mono text-[var(--silver-dim)] text-xs tracking-ritual block mb-2">{label}</label>
+              <input
+                type={type}
+                value={value}
+                onChange={(e) => set(e.target.value)}
+                placeholder={placeholder}
+                className="input-arcane w-full px-4 py-3 text-base"
+                required
+                autoComplete={auto}
+                minLength={type === 'password' ? 8 : undefined}
+              />
+            </div>
+          ))}
+
+          {error && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="font-garamond text-[var(--crimson-glow)] text-sm italic text-center">
+              {error}
+            </motion.p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="font-cinzel text-xs tracking-arcane px-8 py-4 border border-[var(--border-gold)] text-gold hover:bg-[rgba(201,169,110,0.08)] transition-all glow-gold disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+            style={{ letterSpacing: '0.22em' }}
+          >
+            {loading ? 'THE ARCHIVE READS YOU...' : 'OPEN THE GATE'}
+          </button>
+        </form>
+
+        <div className="divider-arcane mt-8 mb-6" />
+        <p className="font-garamond text-[var(--silver-dim)] text-sm italic text-center leading-relaxed">
+          This is a private system of personal reflection and symbolic psychology.
+          Your readings are encrypted and never shared.
         </p>
       </motion.div>
     </div>

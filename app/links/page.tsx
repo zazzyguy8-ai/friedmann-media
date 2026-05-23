@@ -8,7 +8,7 @@ const LINKS = [
   {
     id: 'instagram',
     label: 'Instagram',
-    href: 'https://www.instagram.com/friedmann.media/',
+    href: 'https://www.instagram.com/friedmannleonard',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />

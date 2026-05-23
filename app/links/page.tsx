@@ -87,7 +87,7 @@ export default function LinksPage() {
             {!imgError ? (
               <Image
                 src="/profile.jpg"
-                alt="Friedmann Media"
+                alt="Leonard Friedmann"
                 width={112}
                 height={112}
                 className="w-full h-full object-cover"
@@ -111,9 +111,9 @@ export default function LinksPage() {
           className="text-center flex flex-col items-center gap-1"
         >
           <h1 className="font-display font-bold text-2xl text-[var(--text)] tracking-tight">
-            Friedmann Media
+            Leonard Friedmann
           </h1>
-          <p className="font-mono text-sm text-[var(--muted)]">@friedmann.media</p>
+          <p className="font-mono text-sm text-[var(--muted)]">@friedmannleonard</p>
           <AnimatedFollowers />
         </motion.div>
 
@@ -161,7 +161,7 @@ export default function LinksPage() {
           transition={{ delay: 0.9 }}
           className="font-mono text-xs text-[var(--muted)]/50 mt-4"
         >
-          © 2026 Friedmann Media
+          © 2026 Leonard Friedmann
         </motion.p>
       </div>
     </div>

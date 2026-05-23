@@ -91,7 +91,7 @@ export default function LinksPage() {
                 width={112}
                 height={112}
                 className="w-full h-full object-cover"
-                style={{ transform: 'rotate(-90deg) scale(1.4)' }}
+                style={{ transform: 'scale(1.1)' }}
                 onError={() => setImgError(true)}
                 priority
               />

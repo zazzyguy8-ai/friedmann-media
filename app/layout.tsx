@@ -2,10 +2,13 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Plou — Daily challenges that actually stick',
-  description:
-    'One AI-generated challenge every day based on your goals. Build streaks. Change your life. 7 days free.',
-  keywords: ['daily challenges', 'habit building', 'AI', 'productivity', 'streak'],
+  title: 'DRIP STUDIO — AI Video Ads for Clothing Brands',
+  description: 'Turn product photos into scroll-stopping video ads in 60 seconds. Built for clothing brands. Powered by AI.',
+  openGraph: {
+    title: 'DRIP STUDIO',
+    description: 'AI Video Ad Generator for Clothing Brands',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
@@ -15,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body>{children}</body>
     </html>
   )
 }

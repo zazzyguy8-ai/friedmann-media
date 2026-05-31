@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase-server'
+import { createServerClient, createAdminClient } from '@/lib/supabase-server'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') || '/dashboard'
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin
 
   if (code) {
@@ -12,22 +11,30 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      const { data: profile } = await supabase
+      const admin = createAdminClient()
+
+      // Ensure profile exists
+      const { data: existing } = await admin
         .from('profiles')
-        .select('onboarding_completed')
+        .select('id')
         .eq('id', data.user.id)
         .single()
 
-      if (!profile) {
-        await supabase.from('profiles').insert({ id: data.user.id })
-        return NextResponse.redirect(`${appUrl}/onboarding`)
+      if (!existing) {
+        await admin.from('profiles').insert({
+          id: data.user.id,
+          email: data.user.email,
+          credits: 5,
+          plan: 'free',
+        })
+        await admin.from('credit_transactions').insert({
+          user_id: data.user.id,
+          amount: 5,
+          reason: 'signup_bonus',
+        })
       }
 
-      if (!profile.onboarding_completed) {
-        return NextResponse.redirect(`${appUrl}/onboarding`)
-      }
-
-      return NextResponse.redirect(`${appUrl}${next}`)
+      return NextResponse.redirect(`${appUrl}/dashboard`)
     }
   }
 

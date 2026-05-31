@@ -9,27 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: 'var(--bg)',
-        surface: 'var(--surface)',
-        surface2: 'var(--surface2)',
-        border: 'var(--border)',
-        accent: 'var(--accent)',
-        accent2: 'var(--accent2)',
-        green: 'var(--green)',
-        red: 'var(--red)',
-        yellow: 'var(--yellow)',
-        text: 'var(--text)',
-        muted: 'var(--muted)',
+        bg: '#0A0A0A',
+        surface: '#111111',
+        border: '#222222',
+        accent: '#FF3B00',
+        'text-primary': '#FFFFFF',
+        'text-secondary': '#888888',
       },
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
-        mono: ['DM Mono', 'monospace'],
+        sans: ['Inter', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.4s ease forwards',
-        'slide-up': 'slideUp 0.4s ease forwards',
-        'pulse-scale': 'pulseScale 0.3s ease',
-        'count-up': 'countUp 0.8s ease forwards',
+        'slide-up': 'slideUp 0.5s ease forwards',
+        'progress': 'progress 60s linear forwards',
       },
       keyframes: {
         fadeIn: {
@@ -37,13 +30,12 @@ const config: Config = {
           to: { opacity: '1' },
         },
         slideUp: {
-          from: { opacity: '0', transform: 'translateY(20px)' },
+          from: { opacity: '0', transform: 'translateY(24px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
-        pulseScale: {
-          '0%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
-          '100%': { transform: 'scale(1)' },
+        progress: {
+          from: { width: '0%' },
+          to: { width: '95%' },
         },
       },
     },

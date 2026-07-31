@@ -1,4 +1,8 @@
 [build]
+  # No compilation step: website/ is committed as plain static HTML/CSS.
+  # Set explicitly so a stale dashboard build command (e.g. a leftover
+  # "next build" from this repo's previous Next.js project) can't override it.
+  command = "true"
   publish = "website"
 
 [[headers]]

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AI Blocker</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="header">
+        <img src="../icons/icon32.png" alt="" width="24" height="24" />
+        <h1>AI Blocker</h1>
+        <label class="switch">
+          <input type="checkbox" id="enabled-toggle" />
+          <span class="switch-track"></span>
+        </label>
+      </header>
+
+      <p class="status" id="status-line">AI Blocker is on.</p>
+
+      <div class="stat card">
+        <span class="stat-value" id="blocked-count">0</span>
+        <span class="stat-label">AI sites blocked</span>
+      </div>
+
+      <button class="btn btn-secondary full" id="open-options">Settings</button>
+    </main>
+    <script type="module" src="./popup.js"></script>
+  </body>
+</html>

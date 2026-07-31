@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "AI Blocker",
+  "version": "1.0.0",
+  "description": "Give yourself full control over AI on the web — block AI chatbots, search features, and generation tools.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.google.com/search*",
+        "https://www.bing.com/search*"
+      ],
+      "js": ["content/search-ai-blocker.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": ["storage", "declarativeNetRequest"],
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked/blocked.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "minimum_chrome_version": "111"
+}

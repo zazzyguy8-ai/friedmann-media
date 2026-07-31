@@ -1,0 +1,49 @@
+@import "../shared/theme.css";
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.wrap {
+  max-width: 480px;
+  text-align: center;
+}
+
+.icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0 0 12px;
+}
+
+.lede {
+  font-size: 15px;
+  margin: 0 0 12px;
+}
+
+.explain {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.domain {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  margin: 0 0 24px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}

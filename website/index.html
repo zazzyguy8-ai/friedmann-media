@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Blocker — Full control over AI on the web</title>
+    <meta
+      name="description"
+      content="AI Blocker is a browser extension that blocks AI chatbots, removes AI features from search engines, and keeps AI generation tools out of your browsing."
+    />
+    <link rel="icon" href="./assets/logo.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="container nav">
+      <div class="brand">
+        <img src="./assets/logo.png" alt="" />
+        AI Blocker
+      </div>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#install">Install</a>
+      </nav>
+      <a class="btn btn-secondary" href="https://github.com/zazzyguy8-ai/friedmann-media">
+        GitHub
+      </a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1>Full control over AI on the web.</h1>
+          <p>
+            AI Blocker removes AI chatbots, AI-generated search answers, and AI
+            generation tools from your browsing experience — completely, and by
+            default.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#install">Install AI Blocker</a>
+            <a class="btn btn-secondary" href="#features">See what it blocks</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="features">
+        <div class="container">
+          <h2>What it does</h2>
+          <p class="section-lede">
+            This isn't an AI detector. It's a blocking system — fast, lightweight,
+            and reliable.
+          </p>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="icon">🚫</div>
+              <h3>Block AI websites</h3>
+              <p>
+                Instantly blocks chatgpt.com, claude.ai, gemini.google.com,
+                copilot.microsoft.com, and dozens more — with a clear
+                "Blocked by AI Blocker" page instead of a broken tab.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="icon">🔍</div>
+              <h3>Clean search results</h3>
+              <p>
+                Hides Google's AI Overview and Microsoft Copilot / AI answer
+                boxes so search results stay AI-free.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="icon">📋</div>
+              <h3>Structured local blocklist</h3>
+              <p>
+                Organized by category — chatbots, search, writing, coding, image
+                generation, video generation — so you can toggle exactly what
+                you want blocked.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="icon">📊</div>
+              <h3>Settings &amp; statistics</h3>
+              <p>
+                One switch to enable or disable everything, plus a running count
+                of AI sites blocked over time.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works">
+        <div class="container">
+          <h2>How it works</h2>
+          <p class="section-lede">No accounts, no cloud, no tracking — everything runs locally.</p>
+          <div class="steps">
+            <div class="step">
+              <h3>Install the extension</h3>
+              <p>Load it in Chrome or Edge in a couple of clicks.</p>
+            </div>
+            <div class="step">
+              <h3>AI Blocker is on by default</h3>
+              <p>Every category is enabled the moment you install it.</p>
+            </div>
+            <div class="step">
+              <h3>Browse without AI</h3>
+              <p>Blocked sites redirect to a clear notice — search results stay clean.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <h2>Covers every kind of AI product</h2>
+          <div class="category-chips">
+            <span class="chip">AI Chatbots</span>
+            <span class="chip">AI Search</span>
+            <span class="chip">AI Writing</span>
+            <span class="chip">AI Coding</span>
+            <span class="chip">AI Image Generation</span>
+            <span class="chip">AI Video Generation</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="install">
+        <div class="container">
+          <h2>Install AI Blocker</h2>
+          <p class="section-lede">
+            Not yet on the Chrome Web Store — for now, load the development build
+            directly.
+          </p>
+          <div class="install-steps">
+            <ol>
+              <li>
+                Clone the repository:
+                <code>git clone https://github.com/zazzyguy8-ai/friedmann-media</code>
+              </li>
+              <li>Run <code>npm install</code> then <code>npm run build</code>.</li>
+              <li>
+                Open <code>chrome://extensions</code>, enable <strong>Developer mode</strong>.
+              </li>
+              <li>
+                Click <strong>Load unpacked</strong> and select the generated
+                <code>dist/</code> folder.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>
+          AI Blocker — open source on
+          <a href="https://github.com/zazzyguy8-ai/friedmann-media">GitHub</a>.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

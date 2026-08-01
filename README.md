@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Blocker
 
-## Getting Started
+A Manifest V3 Chrome/Edge extension that gives users full control over AI on
+the web — it blocks AI chatbots, search-engine AI features, and AI generation
+tools.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Site blocking** — a local, categorized blocklist (chatbots, search,
+  writing, coding, image generation, video generation) redirects blocked
+  domains to a clean "Blocked by AI Blocker" page.
+- **Search engine cleanup** — a content script hides Google AI Overview and
+  Bing Copilot/AI answer panels.
+- **Popup** — quick enable/disable toggle and a live blocked-sites counter.
+- **Options page** — master toggle, search-AI toggle, per-category blocklist
+  toggles with counts, statistics, and version info.
+
+## Project layout
+
+```
+src/
+  background/   service worker: builds & syncs declarativeNetRequest rules, message handling
+  content/      content script that hides AI features on search result pages
+  popup/        toolbar popup UI
+  options/      full settings page
+  blocklist/    structured local AI domain list, grouped by category
+  utils/        chrome.storage wrapper (settings + stats)
+  types/        shared TypeScript types
+  shared/       constants and the shared light/dark theme stylesheet
+public/         manifest.json, icons, and static HTML shells (copied as-is to dist/)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run build      # generates icons, bundles src/ + public/ into dist/
+npm run watch      # rebuild on change
+npm run typecheck
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Load `dist/` as an unpacked extension at `chrome://extensions` (Developer
+mode → "Load unpacked").
 
-## Learn More
+## How blocking works
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The background service worker builds `declarativeNetRequest` redirect rules
+from `src/blocklist/domains.ts`, filtered by which categories are enabled in
+settings. A blocked top-level navigation is redirected to the bundled block
+page, which reports the block back to the service worker to update the
+statistics shown in the popup and options page.

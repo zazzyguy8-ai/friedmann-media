@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Blocker Settings</title>
+    <link rel="stylesheet" href="./options.css" />
+    <link rel="icon" href="../icons/icon48.png" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-header">
+        <img src="../icons/icon48.png" alt="" width="32" height="32" />
+        <div>
+          <h1>AI Blocker</h1>
+          <p class="subtitle">Full control over AI on the web.</p>
+        </div>
+      </header>
+
+      <section class="card section">
+        <div class="row">
+          <div>
+            <h2>Enable AI Blocker</h2>
+            <p class="muted">Turn blocking on or off everywhere.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="enabled-toggle" />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="row">
+          <div>
+            <h2>Hide AI in search results</h2>
+            <p class="muted">
+              Remove AI Overview, Copilot answers, and similar AI panels from search engines.
+            </p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="search-ai-toggle" />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card section">
+        <h2>Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat">
+            <span class="stat-value" id="total-blocked">0</span>
+            <span class="stat-label">Sites blocked</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="domains-blocked">0</span>
+            <span class="stat-label">Distinct AI sites hit</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="installed-since">—</span>
+            <span class="stat-label">Protecting since</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary" id="reset-stats">Reset statistics</button>
+      </section>
+
+      <section class="card section">
+        <h2>Blocklist categories</h2>
+        <p class="muted">Toggle whole categories of AI sites on the local blocklist.</p>
+        <ul class="category-list" id="category-list"></ul>
+      </section>
+
+      <footer class="footer">
+        <span id="version-info"></span>
+      </footer>
+    </main>
+    <script type="module" src="./options.js"></script>
+  </body>
+</html>

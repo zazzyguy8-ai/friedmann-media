@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Blocker — Case File AI-0001</title>
+    <meta
+      name="description"
+      content="AI Blocker is a browser extension that blocks AI chatbots, strips AI features from search engines, and keeps AI generation tools out of your browsing — by default."
+    />
+    <link rel="icon" href="./assets/logo.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="binder">
+      <header class="container topbar">
+        <div class="mark">
+          <img src="./assets/logo.png" alt="" />
+          AI Blocker
+        </div>
+        <nav>
+          <a href="#exhibits">Exhibits</a>
+          <a href="#coverage">Coverage</a>
+          <a href="#install">Install</a>
+        </nav>
+        <a class="btn btn-secondary" href="https://github.com/zazzyguy8-ai/friedmann-media">
+          Source
+        </a>
+      </header>
+
+      <main>
+        <section class="cover container" style="border-top: none">
+          <div class="cover-meta">
+            <span>CASE NO. <strong>AI-0001</strong></span>
+            <span>SUBJECT <strong>AI on the open web</strong></span>
+            <span class="stamp-status">ACTIVELY BLOCKING</span>
+          </div>
+          <h1>Full control over AI on the web.</h1>
+          <p class="lede">
+            AI Blocker removes AI chatbots, AI-generated search answers, and AI generation tools
+            from your browsing — completely, locally, and on by default. This isn't a detector. It's
+            a blocking system.
+          </p>
+          <div class="cover-actions">
+            <a class="btn btn-primary" href="#install">Install AI Blocker</a>
+            <a class="btn btn-secondary" href="#exhibits">Read the file</a>
+          </div>
+        </section>
+
+        <section id="exhibits" class="container">
+          <div class="section-head">
+            <span class="tag">Exhibits A–D</span>
+            <h2>What gets blocked</h2>
+          </div>
+          <div class="exhibits">
+            <div class="exhibit">
+              <div class="letter">A</div>
+              <div>
+                <h3>Site-level blocking</h3>
+                <p>
+                  chatgpt.com, claude.ai, gemini.google.com, copilot.microsoft.com, and dozens more
+                  redirect to a plain "Blocked by AI Blocker" page instead of loading.
+                </p>
+              </div>
+            </div>
+            <div class="exhibit">
+              <div class="letter">B</div>
+              <div>
+                <h3>Search engine cleanup</h3>
+                <p>
+                  Google's AI Overview and Microsoft Copilot / AI answer boxes are stripped out of
+                  search results before you see them.
+                </p>
+              </div>
+            </div>
+            <div class="exhibit">
+              <div class="letter">C</div>
+              <div>
+                <h3>Structured local blocklist</h3>
+                <p>
+                  Every domain is filed under one category — chatbots, search, writing, coding,
+                  image generation, video generation — so you can disable exactly one category at a
+                  time.
+                </p>
+              </div>
+            </div>
+            <div class="exhibit">
+              <div class="letter">D</div>
+              <div>
+                <h3>Settings &amp; a running count</h3>
+                <p>
+                  One switch for everything, plus a persistent count of how many AI sites have been
+                  intercepted since install.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="container">
+          <div class="section-head">
+            <span class="tag">Sample intercept</span>
+            <h2>From the log</h2>
+          </div>
+          <p class="section-note">
+            A few entries from the local blocklist. Hover or focus a line to declassify it.
+          </p>
+          <div class="redacted-list">
+            <div class="redacted-row">
+              <span class="category">AI Chatbots</span>
+              <button class="redact-toggle" type="button">
+                chatgpt.com<span class="bar" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="redacted-row">
+              <span class="category">AI Chatbots</span>
+              <button class="redact-toggle" type="button">
+                claude.ai<span class="bar" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="redacted-row">
+              <span class="category">AI Search</span>
+              <button class="redact-toggle" type="button">
+                perplexity.ai<span class="bar" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="redacted-row">
+              <span class="category">AI Image Gen</span>
+              <button class="redact-toggle" type="button">
+                midjourney.com<span class="bar" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="redacted-row">
+              <span class="category">AI Video Gen</span>
+              <button class="redact-toggle" type="button">
+                runwayml.com<span class="bar" aria-hidden="true"></span>
+              </button>
+            </div>
+            <p class="hint">49 domains on file — full list in the repository</p>
+          </div>
+        </section>
+
+        <section id="coverage" class="container">
+          <div class="section-head">
+            <span class="tag">Coverage</span>
+            <h2>Every category on file</h2>
+          </div>
+          <div class="tag-grid">
+            <span class="tag-chip">AI Chatbots</span>
+            <span class="tag-chip">AI Search</span>
+            <span class="tag-chip">AI Writing</span>
+            <span class="tag-chip">AI Coding</span>
+            <span class="tag-chip">AI Image Generation</span>
+            <span class="tag-chip">AI Video Generation</span>
+          </div>
+        </section>
+
+        <section id="install" class="container">
+          <div class="section-head">
+            <span class="tag">Field instructions</span>
+            <h2>Install AI Blocker</h2>
+          </div>
+          <p class="section-note">
+            Not yet on the Chrome Web Store. For now, build and load it directly — takes about a
+            minute.
+          </p>
+          <div class="field-instructions">
+            <ol>
+              <li>Clone: <code>git clone https://github.com/zazzyguy8-ai/friedmann-media</code></li>
+              <li>Build: <code>npm install &amp;&amp; npm run build</code></li>
+              <li>Open <code>chrome://extensions</code>, enable <strong>Developer mode</strong></li>
+              <li>
+                <strong>Load unpacked</strong> → select the generated <code>dist/</code> folder
+              </li>
+            </ol>
+          </div>
+        </section>
+      </main>
+
+      <footer class="container">
+        <div class="footer-row">
+          <span>Distribution: unlimited (open source)</span>
+          <a href="https://github.com/zazzyguy8-ai/friedmann-media"
+            >github.com/zazzyguy8-ai/friedmann-media</a
+          >
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,619 @@
+/* ==========================================================================
+   Fonts — self-hosted, no CDN calls at runtime.
+   Courier Prime: case-file headers, stamps, exhibit labels.
+   IBM Plex Sans: body copy (variable font, single file covers 400-700).
+   IBM Plex Mono: data, domain lists, field instructions.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Courier Prime";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/courier-prime-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Courier Prime";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/courier-prime-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Courier Prime";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fonts/courier-prime-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("./fonts/ibm-plex-sans-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/ibm-plex-mono-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./fonts/ibm-plex-mono-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./fonts/ibm-plex-mono-600.woff2") format("woff2");
+}
+
+/* ==========================================================================
+   Tokens — "Case File" palette. Light = manila folder under office light.
+   Dark ("Night Ops") = the same file read by desk lamp after hours.
+   Redaction black stays black in both — it's the one constant in the system.
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  --paper: #e8dfc8;
+  --paper-well: #ddd0ab;
+  --ink: #211d14;
+  --ink-faint: #6b6248;
+  --redact: #100d08;
+  --stamp: #8c2a1e;
+  --stamp-contrast: #f2e9d2;
+  --rule: #b8a874;
+  --focus-ring: #2f6f6b;
+
+  --font-stamp: "Courier Prime", ui-monospace, monospace;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+
+  --max-width: 880px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #17140d;
+    --paper-well: #201b11;
+    --ink: #e8dfc8;
+    --ink-faint: #948a64;
+    --redact: #000000;
+    --stamp: #d6684f;
+    --stamp-contrast: #17140d;
+    --rule: #3d3620;
+    --focus-ring: #6fc9c2;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #17140d;
+  --paper-well: #201b11;
+  --ink: #e8dfc8;
+  --ink-faint: #948a64;
+  --redact: #000000;
+  --stamp: #d6684f;
+  --stamp-contrast: #17140d;
+  --rule: #3d3620;
+  --focus-ring: #6fc9c2;
+}
+
+:root[data-theme="light"] {
+  --paper: #e8dfc8;
+  --paper-well: #ddd0ab;
+  --ink: #211d14;
+  --ink-faint: #6b6248;
+  --redact: #100d08;
+  --stamp: #8c2a1e;
+  --stamp-contrast: #f2e9d2;
+  --rule: #b8a874;
+  --focus-ring: #2f6f6b;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  /* Coarse paper-grain texture: two offset noise-free gradients, no image request. */
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(16, 13, 8, 0.015) 2px,
+    rgba(16, 13, 8, 0.015) 3px
+  );
+}
+
+a {
+  color: var(--stamp);
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+code {
+  font-family: var(--font-data);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* Binder rule: a vertical line + punch marks the whole page hangs off of. */
+.binder {
+  position: relative;
+  padding-left: 30px;
+  border-left: 1px solid var(--rule);
+  margin-left: 12px;
+}
+
+.binder::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 8px;
+  bottom: 8px;
+  width: 9px;
+  background-image: radial-gradient(circle, var(--paper) 2.5px, var(--rule) 3px, transparent 3.5px);
+  background-size: 9px 46px;
+  background-repeat: repeat-y;
+}
+
+/* ==========================================================================
+   Top bar
+   ========================================================================== */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-stamp);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mark img {
+  width: 22px;
+  height: 22px;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 22px;
+  font-family: var(--font-data);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.topbar nav a {
+  color: var(--ink-faint);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.topbar nav a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink-faint);
+}
+
+.topbar .btn {
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   Buttons — stamped, not rounded-pill.
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 11px 18px;
+  border: 1.5px solid var(--ink);
+  text-decoration: none;
+  transition:
+    transform 80ms ease,
+    background-color 80ms ease,
+    color 80ms ease;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  background: var(--stamp);
+  border-color: var(--stamp);
+  color: var(--stamp-contrast);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+.btn-secondary:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Cover sheet (hero) — a case-file cover, not a centered marketing hero.
+   ========================================================================== */
+
+.cover {
+  padding: 56px 0 44px;
+}
+
+.cover-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  font-family: var(--font-data);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  margin-bottom: 22px;
+}
+
+.cover-meta strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.stamp-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid var(--stamp);
+  color: var(--stamp);
+  padding: 2px 8px;
+  transform: rotate(-2deg);
+  font-weight: 700;
+}
+
+.stamp-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--stamp);
+}
+
+.cover h1 {
+  font-family: var(--font-stamp);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin: 0 0 20px;
+  max-width: 15ch;
+}
+
+.cover p.lede {
+  max-width: 58ch;
+  font-size: 17px;
+  color: var(--ink-faint);
+  margin: 0 0 28px;
+}
+
+.cover-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Sections
+   ========================================================================== */
+
+section {
+  padding: 40px 0;
+  border-top: 1px dashed var(--rule);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.section-head .tag {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--stamp);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.section-head h2 {
+  font-family: var(--font-stamp);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.section-note {
+  font-size: 14px;
+  color: var(--ink-faint);
+  max-width: 60ch;
+  margin: -12px 0 24px;
+}
+
+/* ---- Exhibits (features) ---- */
+
+.exhibits {
+  display: grid;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+.exhibit {
+  background: var(--paper);
+  padding: 20px 22px;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.exhibit .letter {
+  font-family: var(--font-stamp);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--ink-faint);
+}
+
+.exhibit h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15.5px;
+  margin: 0 0 6px;
+}
+
+.exhibit p {
+  font-size: 14px;
+  color: var(--ink-faint);
+  margin: 0;
+  max-width: 56ch;
+}
+
+/* ---- Redacted domain list (hover/focus reveals) ---- */
+
+.redacted-list {
+  font-family: var(--font-data);
+  font-size: 14px;
+  background: var(--paper-well);
+  border: 1px solid var(--rule);
+  padding: 20px 22px;
+  display: grid;
+  gap: 10px;
+}
+
+.redacted-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: baseline;
+}
+
+.redacted-row .category {
+  color: var(--ink-faint);
+  min-width: 15ch;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.redact-toggle {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+}
+
+.redact-toggle .bar {
+  position: absolute;
+  inset: 1px -2px;
+  background: var(--redact);
+  transform-origin: left center;
+  transition: transform 220ms ease;
+}
+
+.redact-toggle:hover .bar,
+.redact-toggle:focus-visible .bar {
+  transform: scaleX(0);
+}
+
+.redacted-list .hint {
+  font-size: 11px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* ---- Coverage tags ---- */
+
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-chip {
+  font-family: var(--font-data);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--ink);
+  padding: 6px 12px;
+}
+
+/* ---- Field instructions (install) ---- */
+
+.field-instructions {
+  background: var(--paper-well);
+  border: 1px solid var(--rule);
+  padding: 24px 26px;
+  max-width: 640px;
+}
+
+.field-instructions ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  font-family: var(--font-data);
+  font-size: 13.5px;
+}
+
+.field-instructions li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 14px;
+}
+
+.field-instructions li:last-child {
+  margin-bottom: 0;
+}
+
+.field-instructions li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  color: var(--stamp);
+  font-weight: 600;
+}
+
+.field-instructions code {
+  background: var(--rule);
+  color: var(--ink);
+  padding: 1px 6px;
+  font-size: 12.5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .field-instructions code {
+    background: #33301f;
+    color: var(--ink);
+  }
+}
+:root[data-theme="dark"] .field-instructions code {
+  background: #33301f;
+  color: var(--ink);
+}
+
+/* ==========================================================================
+   Footer — file closing stamp
+   ========================================================================== */
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 26px 0 48px;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--font-data);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+}
+
+.footer-row a {
+  color: var(--ink-faint);
+}
+
+.footer-row a:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 620px) {
+  .topbar nav {
+    display: none;
+  }
+  .exhibit {
+    grid-template-columns: 40px 1fr;
+  }
+  .binder {
+    padding-left: 20px;
+    margin-left: 6px;
+  }
+}

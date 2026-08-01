@@ -4,7 +4,8 @@ import type { BlocklistEntry } from "@/types/blocklist";
  * Local AI domain blocklist, organized by category. Keep entries as precise
  * hostnames (not bare registrable domains shared with non-AI products) so a
  * rule never blocks more than intended — e.g. "gemini.google.com" rather
- * than "google.com".
+ * than "google.com". Use the `path` field for the rare case where the AI
+ * product is a section of an otherwise-general site (see HuggingChat below).
  */
 export const BLOCKLIST: BlocklistEntry[] = [
   // AI Chatbots
@@ -22,12 +23,23 @@ export const BLOCKLIST: BlocklistEntry[] = [
   { domain: "chat.mistral.ai", name: "Le Chat", category: "ai-chatbots" },
   { domain: "chat.qwen.ai", name: "Qwen Chat", category: "ai-chatbots" },
   { domain: "huggingface.co", path: "/chat", name: "HuggingChat", category: "ai-chatbots" },
+  {
+    domain: "duckduckgo.com",
+    path: "/aichat",
+    name: "DuckDuckGo AI Chat",
+    category: "ai-chatbots",
+  },
+  { domain: "kimi.com", name: "Kimi", category: "ai-chatbots" },
+  { domain: "monica.im", name: "Monica", category: "ai-chatbots" },
+  { domain: "coze.com", name: "Coze", category: "ai-chatbots" },
+  { domain: "chatglm.cn", name: "ChatGLM", category: "ai-chatbots" },
 
   // AI Search
   { domain: "perplexity.ai", name: "Perplexity", category: "ai-search" },
   { domain: "you.com", name: "You.com", category: "ai-search" },
   { domain: "phind.com", name: "Phind", category: "ai-search" },
   { domain: "andisearch.com", name: "Andi", category: "ai-search" },
+  { domain: "exa.ai", name: "Exa", category: "ai-search" },
 
   // AI Writing
   { domain: "jasper.ai", name: "Jasper", category: "ai-writing" },
@@ -37,16 +49,24 @@ export const BLOCKLIST: BlocklistEntry[] = [
   { domain: "writer.com", name: "Writer", category: "ai-writing" },
   { domain: "grammarly.com", name: "Grammarly", category: "ai-writing" },
   { domain: "rytr.me", name: "Rytr", category: "ai-writing" },
+  { domain: "sudowrite.com", name: "Sudowrite", category: "ai-writing" },
+  { domain: "hypotenuse.ai", name: "Hypotenuse AI", category: "ai-writing" },
+  { domain: "lex.page", name: "Lex", category: "ai-writing" },
 
   // AI Coding
   { domain: "cursor.com", name: "Cursor", category: "ai-coding" },
   { domain: "codeium.com", name: "Codeium", category: "ai-coding" },
+  { domain: "windsurf.com", name: "Windsurf", category: "ai-coding" },
   { domain: "tabnine.com", name: "Tabnine", category: "ai-coding" },
   { domain: "bolt.new", name: "Bolt", category: "ai-coding" },
   { domain: "v0.app", name: "v0", category: "ai-coding" },
   { domain: "v0.dev", name: "v0 (legacy)", category: "ai-coding" },
   { domain: "lovable.dev", name: "Lovable", category: "ai-coding" },
   { domain: "devin.ai", name: "Devin", category: "ai-coding" },
+  { domain: "cognition.ai", name: "Cognition", category: "ai-coding" },
+  { domain: "aider.chat", name: "Aider", category: "ai-coding" },
+  { domain: "continue.dev", name: "Continue", category: "ai-coding" },
+  { domain: "augmentcode.com", name: "Augment Code", category: "ai-coding" },
 
   // AI Image Generation
   { domain: "midjourney.com", name: "Midjourney", category: "ai-image-generation" },
@@ -57,6 +77,15 @@ export const BLOCKLIST: BlocklistEntry[] = [
   { domain: "firefly.adobe.com", name: "Adobe Firefly", category: "ai-image-generation" },
   { domain: "civitai.com", name: "Civitai", category: "ai-image-generation" },
   { domain: "nightcafe.studio", name: "NightCafe", category: "ai-image-generation" },
+  { domain: "clipdrop.co", name: "Clipdrop", category: "ai-image-generation" },
+  { domain: "getimg.ai", name: "GetIMG", category: "ai-image-generation" },
+  {
+    domain: "blackforestlabs.ai",
+    name: "Black Forest Labs (FLUX)",
+    category: "ai-image-generation",
+  },
+  { domain: "recraft.ai", name: "Recraft", category: "ai-image-generation" },
+  { domain: "lexica.art", name: "Lexica", category: "ai-image-generation" },
 
   // AI Video Generation
   { domain: "runwayml.com", name: "Runway", category: "ai-video-generation" },
@@ -67,4 +96,8 @@ export const BLOCKLIST: BlocklistEntry[] = [
   { domain: "lumalabs.ai", name: "Luma AI", category: "ai-video-generation" },
   { domain: "sora.com", name: "Sora", category: "ai-video-generation" },
   { domain: "ai.invideo.io", name: "InVideo AI", category: "ai-video-generation" },
+  { domain: "higgsfield.ai", name: "Higgsfield", category: "ai-video-generation" },
+  { domain: "hedra.com", name: "Hedra", category: "ai-video-generation" },
+  { domain: "opus.pro", name: "OpusClip", category: "ai-video-generation" },
+  { domain: "viggle.ai", name: "Viggle", category: "ai-video-generation" },
 ];

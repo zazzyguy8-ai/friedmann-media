@@ -149,13 +149,12 @@ body {
   font-size: 16px;
   line-height: 1.6;
   /* Coarse paper-grain texture: two offset noise-free gradients, no image request. */
-  background-image:
-    repeating-linear-gradient(
-      transparent,
-      transparent 2px,
-      rgba(16, 13, 8, 0.015) 2px,
-      rgba(16, 13, 8, 0.015) 3px
-    );
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(16, 13, 8, 0.015) 2px,
+    rgba(16, 13, 8, 0.015) 3px
+  );
 }
 
 a {
@@ -268,7 +267,10 @@ code {
   padding: 11px 18px;
   border: 1.5px solid var(--ink);
   text-decoration: none;
-  transition: transform 80ms ease, background-color 80ms ease, color 80ms ease;
+  transition:
+    transform 80ms ease,
+    background-color 80ms ease,
+    color 80ms ease;
 }
 
 .btn-primary {

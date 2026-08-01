@@ -7,15 +7,19 @@ import {
   setSettings,
 } from "@/utils/storage";
 import { syncRules } from "./rules";
+import { updateBadge } from "./badge";
 import type { RuntimeMessage, RuntimeResponse } from "@/types/messages";
 
 async function init(): Promise<void> {
-  const settings = await getSettings();
-  await syncRules(settings);
+  const [settings, stats] = await Promise.all([getSettings(), getStats()]);
+  await Promise.all([syncRules(settings), updateBadge(stats.totalBlocked)]);
 }
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
   void init();
+  if (details.reason === "install") {
+    chrome.runtime.openOptionsPage();
+  }
 });
 
 chrome.runtime.onStartup.addListener(() => {
@@ -32,13 +36,19 @@ function handleMessage(
 ): void {
   switch (message.type) {
     case "SITE_BLOCKED":
-      void recordBlock(message.domain).then((stats) => sendResponse({ ok: true, stats }));
+      void recordBlock(message.domain).then((stats) => {
+        void updateBadge(stats.totalBlocked);
+        sendResponse({ ok: true, stats });
+      });
       return;
     case "GET_STATS":
       void getStats().then((stats) => sendResponse({ ok: true, stats }));
       return;
     case "RESET_STATS":
-      void resetStats().then((stats) => sendResponse({ ok: true, stats }));
+      void resetStats().then((stats) => {
+        void updateBadge(stats.totalBlocked);
+        sendResponse({ ok: true, stats });
+      });
       return;
     case "GET_SETTINGS":
       void getSettings().then((settings) => sendResponse({ ok: true, settings }));

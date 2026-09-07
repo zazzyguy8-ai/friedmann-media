@@ -1,227 +1,348 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion, useSpring, useTransform } from 'framer-motion'
+import {
+  BookCta,
+  Container,
+  EstimateNote,
+  Eyebrow,
+  Reveal,
+  Rule,
+  Section,
+  SectionHeading,
+  TextLink,
+} from '@/components/ui'
+import { faqs, illustration, pipeline, plans, process, sectors, services } from '@/lib/content'
+import { JsonLd, faqSchema } from '@/lib/seo'
+import { site } from '@/lib/site'
 
-function AnimatedStreak() {
-  const spring = useSpring(0, { stiffness: 60, damping: 15 })
-  const display = useTransform(spring, (v) => Math.round(v))
-  const [value, setValue] = useState(0)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      spring.set(47)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [spring])
-
-  useEffect(() => {
-    const unsubscribe = display.onChange((v) => setValue(v))
-    return unsubscribe
-  }, [display])
-
+export default function HomePage() {
   return (
-    <div className="flex items-center gap-2 justify-center">
-      <span className="text-3xl">🔥</span>
-      <span className="font-mono font-medium text-5xl text-[var(--text)]">{value}</span>
-      <span className="font-display text-[var(--muted)] text-lg">day streak</span>
-    </div>
-  )
-}
-
-export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-[var(--bg)] relative overflow-hidden">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-sm">
-        <span className="font-display font-bold text-2xl gradient-text">plou</span>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="font-display font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors px-4 py-2"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="font-display font-semibold text-white gradient-bg px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.25)]"
-          >
-            Start free
-          </Link>
-        </div>
-      </nav>
-
+    <>
       {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center gap-8 max-w-3xl mx-auto"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border)] mb-2">
-            <span className="text-sm">✨</span>
-            <span className="font-mono text-xs text-[var(--muted)]">AI-powered daily challenges</span>
+      <Section className="pt-16 sm:pt-24 lg:pt-32">
+        <Container>
+          <Reveal className="max-w-4xl">
+            <Eyebrow>AI automation for UK clinics &amp; local businesses</Eyebrow>
+            <h1 className="display text-[2.5rem] leading-[1.05] sm:text-6xl lg:text-7xl">
+              Every enquiry answered
+              <br />
+              <span className="text-muted-dim">in under a minute.</span>
+            </h1>
+            <p className="prose-body mt-8 max-w-xl text-lg sm:text-xl">
+              We build the system that replies to every new enquiry, works out what the person
+              actually needs, and books the ones worth your time straight into your diary — at 9pm on
+              a Sunday as readily as on a Tuesday morning.
+            </p>
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <BookCta />
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 px-1 py-3 text-sm text-muted transition-colors hover:text-content"
+              >
+                See what we build <span aria-hidden="true">&rarr;</span>
+              </Link>
+            </div>
+            <p className="mt-6 text-sm text-muted-dim">{site.bookingNote}</p>
+          </Reveal>
+        </Container>
+      </Section>
+
+      <Container>
+        <Rule />
+      </Container>
+
+      {/* The problem */}
+      <Section>
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <SectionHeading
+                eyebrow="The problem"
+                title="The enquiry arrives at 8:40pm. You reply at 9:15 the next morning."
+              />
+            </Reveal>
+            <Reveal className="lg:col-span-7">
+              <div className="space-y-6 text-base leading-relaxed text-muted sm:text-lg">
+                <p>
+                  By then they have messaged two other practices. The one that answered first is the
+                  one they are now talking to. Nothing about your clinic was worse — you were just
+                  closed.
+                </p>
+                <p>
+                  It is not only the evenings. It is the third enquiry that arrives while reception
+                  is on the phone, the Instagram message nobody owns, the form that goes to an inbox
+                  two people half-check, and the enquiry from six weeks ago that was never followed
+                  up because the week got busy.
+                </p>
+                <p className="text-content">
+                  These are the enquiries for your highest-value work. The people asking about
+                  implants and aligners are, almost by definition, the ones shopping around.
+                </p>
+              </div>
+            </Reveal>
           </div>
+        </Container>
+      </Section>
 
-          <h1 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl leading-tight text-[var(--text)]">
-            1 challenge.{' '}
-            <span className="gradient-text">every day.</span>
-            <br />
-            no excuses.
-          </h1>
-
-          <p className="font-display text-xl text-[var(--muted)] max-w-lg">
-            Small actions. Big changes. Powered by AI.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
-            <Link
-              href="/signup"
-              className="font-display font-semibold text-white gradient-bg px-8 py-4 rounded-xl text-lg hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)] flex items-center gap-2"
-            >
-              Start for free →
-            </Link>
-            <a
-              href="#how-it-works"
-              className="font-display font-medium text-[var(--muted)] hover:text-[var(--text)] transition-colors px-6 py-4 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] bg-[var(--surface)]"
-            >
-              See how it works
-            </a>
+      {/* How it works */}
+      <Section className="border-y border-line bg-surface/40">
+        <Container>
+          <Reveal>
+            <SectionHeading
+              eyebrow="What we build"
+              title="One system, six jobs."
+              lead="Not a chatbot bolted onto your website. A pipeline that takes an enquiry from wherever it lands to a confirmed appointment in your diary — and stops the moment it needs a human."
+            />
+          </Reveal>
+          <div className="mt-16 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            {pipeline.map((item) => (
+              <Reveal key={item.step}>
+                <div className="h-full bg-bg p-8 lg:p-10">
+                  <span className="font-mono text-xs text-accent">{item.step}</span>
+                  <h3 className="mt-5 text-lg font-medium tracking-tight">{item.title}</h3>
+                  <p className="prose-body mt-3 text-sm">{item.body}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
+        </Container>
+      </Section>
 
-          <p className="font-mono text-xs text-[var(--muted)]">
-            100% free · No credit card required · Start in 60 seconds
-          </p>
+      {/* Guardrails - the differentiator, and the honest bit */}
+      <Section>
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <SectionHeading
+                eyebrow="Guardrails"
+                title="What it will not do, and why that matters more than what it will."
+              />
+            </Reveal>
+            <Reveal className="lg:col-span-7">
+              <ul className="space-y-6">
+                {[
+                  [
+                    'It never gives clinical advice.',
+                    'Symptoms, suitability, medication, any clinical opinion — the automation stops and a named human takes over.',
+                  ],
+                  [
+                    'It never pretends to be a person.',
+                    'It says what it is at the start of the conversation. For a healthcare provider that is not just honest, it is the safe position.',
+                  ],
+                  [
+                    'It never invents an answer.',
+                    'If the information is not in what you gave us, it says it does not know and passes the conversation on, with everything said so far attached.',
+                  ],
+                  [
+                    'It never keeps messaging someone who asked it to stop.',
+                    'One opt-out is honoured on every channel, permanently, without anyone having to remember to action it.',
+                  ],
+                ].map(([title, body]) => (
+                  <li key={title} className="border-l border-line-strong pl-6">
+                    <p className="font-medium tracking-tight">{title}</p>
+                    <p className="prose-body mt-2 text-sm">{body}</p>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          </div>
+        </Container>
+      </Section>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-6 p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)]"
-          >
-            <AnimatedStreak />
-          </motion.div>
-        </motion.div>
-      </section>
+      {/* Services */}
+      <Section className="border-y border-line bg-surface/40">
+        <Container>
+          <Reveal>
+            <SectionHeading eyebrow="Services" title="Three things, done properly." />
+          </Reveal>
+          <div className="mt-16 space-y-px overflow-hidden rounded-lg border border-line bg-line">
+            {services.map((service, i) => (
+              <Reveal key={service.slug}>
+                <Link
+                  href="/services"
+                  className="group grid gap-6 bg-bg p-8 transition-colors hover:bg-surface2 sm:grid-cols-12 sm:items-baseline lg:p-10"
+                >
+                  <span className="font-mono text-xs text-muted-dim sm:col-span-1">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="text-xl font-medium tracking-tight sm:col-span-4">
+                    {service.title}
+                  </h3>
+                  <p className="prose-body text-sm sm:col-span-6">{service.summary}</p>
+                  <span
+                    aria-hidden="true"
+                    className="text-muted-dim transition-colors group-hover:text-accent sm:col-span-1 sm:text-right"
+                  >
+                    &rarr;
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </Section>
 
-      {/* Features */}
-      <section id="how-it-works" className="px-6 py-24 max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[var(--text)] mb-4">
-            How it works
-          </h2>
-          <p className="font-display text-[var(--muted)] text-lg">Simple. Effective. Addictive.</p>
-        </motion.div>
+      {/* Who it is for */}
+      <Section>
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-5">
+              <SectionHeading
+                eyebrow="Who this is for"
+                title="Businesses where one missed enquiry costs four figures."
+                lead="The common thread is not the industry. It is the arithmetic: enquiries arrive faster than a small front desk can answer them, and each one is worth enough to be worth catching."
+              />
+              <div className="mt-8">
+                <TextLink href="/dental-clinics">
+                  How this works for private dental clinics
+                </TextLink>
+              </div>
+            </Reveal>
+            <Reveal className="lg:col-span-7">
+              <ul className="divide-y divide-line border-y border-line">
+                {sectors.map((sector) => (
+                  <li key={sector.name} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-5">
+                    <span className="font-medium tracking-tight">{sector.name}</span>
+                    <span className="text-sm text-muted-dim">{sector.note}</span>
+                  </li>
+                ))}
+              </ul>
+              <EstimateNote>{illustration.point}</EstimateNote>
+            </Reveal>
+          </div>
+        </Container>
+      </Section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: '🎯',
-              title: 'Personalized',
-              desc: 'AI generates challenges based on your goals and available time.',
-            },
-            {
-              icon: '🔥',
-              title: 'Streak system',
-              desc: 'Miss one day and it resets. That\'s the point. Consistency wins.',
-            },
-            {
-              icon: '⚡',
-              title: '5 minutes',
-              desc: 'Every challenge is completable in under 30 minutes. No excuses.',
-            },
-          ].map((feature, i) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
-            >
-              <span className="text-4xl block mb-4">{feature.icon}</span>
-              <h3 className="font-display font-semibold text-xl text-[var(--text)] mb-2">
-                {feature.title}
-              </h3>
-              <p className="font-display text-[var(--muted)] leading-relaxed">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      {/* Process */}
+      <Section className="border-y border-line bg-surface/40">
+        <Container>
+          <Reveal>
+            <SectionHeading
+              eyebrow="How we work"
+              title="Five steps, and you can stop at any of them."
+              lead="Nothing goes near a patient until you have read it and approved the wording."
+            />
+          </Reveal>
+          <div className="mt-16 grid gap-px overflow-hidden rounded-lg border border-line bg-line lg:grid-cols-5">
+            {process.map((step) => (
+              <Reveal key={step.n}>
+                <div className="flex h-full flex-col bg-bg p-8">
+                  <span className="font-mono text-xs text-accent">{step.n}</span>
+                  <h3 className="mt-5 text-base font-medium tracking-tight">{step.title}</h3>
+                  <p className="prose-body mt-3 flex-1 text-sm">{step.body}</p>
+                  <p className="mt-6 font-mono text-[0.6875rem] uppercase tracking-widest text-muted-dim">
+                    {step.duration}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </Section>
 
-      {/* Social proof */}
-      <section className="px-6 py-12 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-lg mx-auto"
-        >
-          <div className="text-2xl mb-2">⭐⭐⭐⭐⭐</div>
-          <p className="font-display font-semibold text-[var(--text)] text-xl">
-            Join 2,400+ people building better habits
-          </p>
-          <p className="font-mono text-sm text-[var(--muted)] mt-2">
-            Average streak: 12 days · Best streak: 147 days
-          </p>
-        </motion.div>
-      </section>
+      {/* Pricing summary */}
+      <Section>
+        <Container>
+          <Reveal>
+            <SectionHeading
+              eyebrow="Pricing"
+              title="A one-off build fee, then a monthly fee to run it."
+              lead="Published, because you should not have to sit through a call to find out whether this is in your range."
+            />
+          </Reveal>
+          <div className="mt-16 grid gap-px overflow-hidden rounded-lg border border-line bg-line lg:grid-cols-3">
+            {plans.map((plan) => (
+              <Reveal key={plan.name}>
+                <div
+                  className={`flex h-full flex-col p-8 lg:p-10 ${
+                    plan.featured ? 'bg-surface2' : 'bg-bg'
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h3 className="text-lg font-medium tracking-tight">{plan.name}</h3>
+                    {plan.featured && (
+                      <span className="rounded-full bg-accent-soft px-3 py-1 text-[0.6875rem] uppercase tracking-widest text-accent">
+                        Most take this
+                      </span>
+                    )}
+                  </div>
+                  <p className="prose-body mt-3 text-sm">{plan.best}</p>
+                  <div className="mt-8">
+                    <p className="display-sm text-3xl">{plan.build}</p>
+                    <p className="mt-1 text-sm text-muted-dim">one-off build</p>
+                    <p className="mt-4 text-lg text-content">
+                      {plan.monthly}
+                      <span className="text-sm text-muted-dim"> / month to run</span>
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal>
+            <div className="mt-10">
+              <TextLink href="/pricing">Full pricing, and what is not included</TextLink>
+            </div>
+          </Reveal>
+        </Container>
+      </Section>
 
-      {/* Final CTA */}
-      <section className="px-6 py-24 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto p-12 rounded-2xl bg-[var(--surface)] border border-[var(--border)]"
-        >
-          <h2 className="font-display font-bold text-4xl text-[var(--text)] mb-4">
-            Ready to start?
-          </h2>
-          <p className="font-display text-[var(--muted)] text-lg mb-8">
-            One small challenge tomorrow morning. That&apos;s all it takes.
-          </p>
-          <Link
-            href="/signup"
-            className="inline-flex items-center gap-2 font-display font-semibold text-white gradient-bg px-10 py-4 rounded-xl text-xl hover:opacity-90 active:opacity-80 transition-opacity shadow-lg shadow-[rgba(91,139,255,0.3)]"
-          >
-            Start for free →
-          </Link>
-          <p className="font-mono text-xs text-[var(--muted)] mt-6">
-            100% free · No credit card required · Start in 60 seconds
-          </p>
-        </motion.div>
-      </section>
+      {/* FAQ */}
+      <Section className="border-t border-line bg-surface/40">
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-4">
+              <SectionHeading eyebrow="Questions" title="The ones that come up every time." />
+            </Reveal>
+            <Reveal className="lg:col-span-8">
+              <div className="divide-y divide-line border-y border-line">
+                {faqs.map((faq) => (
+                  <details key={faq.q} className="group py-6">
+                    <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-base font-medium tracking-tight marker:hidden">
+                      {faq.q}
+                      <span
+                        aria-hidden="true"
+                        className="mt-1 shrink-0 text-muted-dim transition-transform duration-200 group-open:rotate-45"
+                      >
+                        +
+                      </span>
+                    </summary>
+                    <p className="prose-body mt-4 max-w-prose text-sm">{faq.a}</p>
+                  </details>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </Container>
+      </Section>
 
-      {/* Footer */}
-      <footer className="border-t border-[var(--border)] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <span className="font-display font-bold text-xl gradient-text">plou</span>
-        <p className="font-mono text-xs text-[var(--muted)]">
-          © {new Date().getFullYear()} Plou. All rights reserved.
-        </p>
-        <div className="flex items-center gap-6">
-          <Link
-            href="/privacy"
-            className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/terms"
-            className="font-display text-sm text-[var(--muted)] hover:text-[var(--text)] transition-colors"
-          >
-            Terms
-          </Link>
-        </div>
-      </footer>
-    </div>
+      {/* Closing CTA */}
+      <Section>
+        <Container>
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2 className="display-sm text-3xl sm:text-4xl lg:text-5xl">
+              Find out what you are missing.
+            </h2>
+            <p className="prose-body mx-auto mt-6 max-w-prose text-base sm:text-lg">
+              Twenty minutes. We look at how enquiries reach you today and where they stall. If
+              there is nothing here worth automating, we will tell you on the call.
+            </p>
+            <div className="mt-10 flex justify-center">
+              <BookCta />
+            </div>
+            <p className="mt-6 text-sm text-muted-dim">
+              Prefer email?{' '}
+              <a
+                href={`mailto:${site.email}`}
+                className="text-muted underline decoration-line-strong underline-offset-4 transition-colors hover:text-content"
+              >
+                {site.email}
+              </a>
+            </p>
+          </Reveal>
+        </Container>
+      </Section>
+
+      <JsonLd data={faqSchema} />
+    </>
   )
 }

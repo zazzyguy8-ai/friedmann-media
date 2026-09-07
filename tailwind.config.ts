@@ -1,50 +1,30 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
         bg: 'var(--bg)',
         surface: 'var(--surface)',
         surface2: 'var(--surface2)',
-        border: 'var(--border)',
+        line: 'var(--border)',
+        'line-strong': 'var(--border-strong)',
         accent: 'var(--accent)',
-        accent2: 'var(--accent2)',
-        green: 'var(--green)',
-        red: 'var(--red)',
-        yellow: 'var(--yellow)',
-        text: 'var(--text)',
+        'accent-soft': 'var(--accent-soft)',
+        content: 'var(--text)',
         muted: 'var(--muted)',
+        'muted-dim': 'var(--muted-dim)',
       },
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
-        mono: ['DM Mono', 'monospace'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
-      animation: {
-        'fade-in': 'fadeIn 0.4s ease forwards',
-        'slide-up': 'slideUp 0.4s ease forwards',
-        'pulse-scale': 'pulseScale 0.3s ease',
-        'count-up': 'countUp 0.8s ease forwards',
+      maxWidth: {
+        prose: '68ch',
       },
-      keyframes: {
-        fadeIn: {
-          from: { opacity: '0' },
-          to: { opacity: '1' },
-        },
-        slideUp: {
-          from: { opacity: '0', transform: 'translateY(20px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
-        },
-        pulseScale: {
-          '0%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
-          '100%': { transform: 'scale(1)' },
-        },
+      spacing: {
+        section: '7.5rem',
       },
     },
   },

@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Friedmann Media
 
-## Getting Started
+Marketing site for Friedmann Media — AI enquiry handling for UK private dental
+clinics and other high-value local businesses.
 
-First, run the development server:
+Next.js 14 (App Router), TypeScript, Tailwind. Fully static: every route is
+prerendered at build time, there is no database, no API route and no runtime
+secret.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm test           # typecheck + lint
+npm run build      # production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Before this goes live on the domain
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything a visitor can act on lives in `lib/site.ts`. Three values in there
+are placeholders and must be replaced — they are marked `NEEDS CONFIRMATION`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Value | Why it matters |
+| --- | --- |
+| `bookingUrl` | Every call-to-action on the site points at it. A dead booking link is worse than no button. |
+| `founder.name` | Appears in the About page signature and in the JSON-LD. |
+| `legal.address`, `legal.companyNumber`, `legal.icoRegistration` | Referenced by the privacy policy. A UK business processing enquiry data generally needs an ICO registration. |
 
-## Learn More
+`legal.companyNumber` and `legal.icoRegistration` are `null` by default and the
+privacy page simply omits those lines rather than printing a placeholder at a
+visitor.
 
-To learn more about Next.js, take a look at the following resources:
+The privacy policy and terms describe how this business actually intends to
+operate, but they have not been reviewed by a solicitor. Have them checked
+before relying on them.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+  page.tsx              home
+  services/             what we build
+  dental-clinics/       primary ICP landing page
+  pricing/              published pricing
+  about/                positioning
+  contact/              booking
+  privacy/, terms/      legal
+  sitemap.ts, robots.ts
+components/
+  site-header.tsx       nav, mobile menu
+  site-footer.tsx
+  ui.tsx                layout primitives, CTA, section headings
+  legal.tsx             legal page shell
+  reveal-script.tsx     scroll reveal (progressive enhancement)
+lib/
+  site.ts               business identity, contact, booking link
+  content.ts            all site copy as data
+  seo.tsx               metadata helpers and JSON-LD
+```
 
-## Deploy on Vercel
+## Copy rules
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`lib/content.ts` is the single source of the site's claims, and it follows one
+rule: **no claim about a result we have not measured.**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+What the system *does* — replies within a minute, refuses clinical advice, logs
+every conversation, honours an opt-out everywhere — is a property of what gets
+built and is stated plainly. What it *earned somebody* is not stated at all
+unless it is labelled as an illustration with its assumptions shown, which is
+what the `<EstimateNote>` component is for.
+
+There are no testimonials, client logos or performance statistics on this site,
+because there are none to show yet. Add them when they are real.

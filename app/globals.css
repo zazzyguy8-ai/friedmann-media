@@ -1,21 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Minimal dark premium: near-black ground, near-white text, one blue accent
+ * used sparingly enough that it still means something when it appears.
+ * Everything else is whitespace and type.
+ */
 :root {
-  --bg: #080a0f;
-  --surface: #0f1218;
-  --surface2: #161c26;
-  --border: #1e2736;
-  --accent: #5b8bff;
-  --accent2: #9b6fff;
-  --green: #3de087;
-  --red: #ff5b5b;
-  --yellow: #ffd166;
-  --text: #e8edf5;
-  --muted: #5a6a82;
+  --bg: #08090a;
+  --surface: #0e0f11;
+  --surface2: #141518;
+  --border: #1e2024;
+  --border-strong: #2a2d33;
+  --accent: #4d8dff;
+  --accent-soft: rgba(77, 141, 255, 0.12);
+  --accent-line: rgba(77, 141, 255, 0.32);
+  --text: #f4f5f7;
+  --muted: #8b8f99;
+  --muted-dim: #63676f;
 }
 
 * {
@@ -24,63 +27,114 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'Syne', sans-serif;
   min-height: 100vh;
-  position: relative;
   overflow-x: hidden;
+  font-feature-settings: 'ss01', 'cv01';
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
+/* Display type is the whole visual identity here: large, tight, quiet. */
+.display {
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  font-weight: 500;
 }
 
-.font-display {
-  font-family: 'Syne', sans-serif;
+.display-sm {
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  font-weight: 500;
 }
 
-.font-mono {
-  font-family: 'DM Mono', monospace;
+.eyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+  font-weight: 500;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.prose-body {
+  color: var(--muted);
+  line-height: 1.7;
 }
 
-.gradient-bg {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+/* A single hairline that fades at both ends - used to separate sections
+   without the hard edge of a full-width border. */
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-strong) 15%,
+    var(--border-strong) 85%,
+    transparent
+  );
 }
 
-/* Scrollbar */
+/* Reveal on scroll. Starts visible so the page is readable with JS disabled
+   and for anyone who prefers reduced motion. */
+.reveal {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: rgba(77, 141, 255, 0.28);
+  color: var(--text);
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--surface);
+  background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
+  background: var(--border-strong);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
-}
-
-/* Selection */
-::selection {
-  background: rgba(91, 139, 255, 0.3);
-  color: var(--text);
+  background: var(--muted-dim);
 }

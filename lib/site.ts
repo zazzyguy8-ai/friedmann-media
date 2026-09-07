@@ -19,12 +19,8 @@ export const site = {
   description:
     'We build AI systems that answer every enquiry in under a minute, qualify it, and book it into your diary - for UK private dental clinics and other high-value local businesses.',
 
-  /**
-   * Every call-to-action on the site points here. NEEDS CONFIRMATION - replace
-   * with the real Cal.com event link before launch; a dead booking link is
-   * worse than no button at all.
-   */
-  bookingUrl: 'https://cal.com/friedmann-media/intro',
+  /** Every call-to-action on the site points here. */
+  bookingUrl: 'https://cal.com/leonard-friedmann-qsliio',
   bookingLabel: 'Book a 20-minute call',
   /** Shown next to the CTA so the visitor knows what they are agreeing to. */
   bookingNote: '20 minutes, no pitch deck. We look at how enquiries reach you today.',
@@ -34,8 +30,8 @@ export const site = {
   phone: null as string | null,
 
   founder: {
-    /** NEEDS CONFIRMATION - appears in the About page signature and in JSON-LD. */
-    name: 'Richard Friedmann',
+    /** Appears in the About page signature and in the JSON-LD. */
+    name: 'Leonard Friedmann',
     role: 'Founder',
   },
 

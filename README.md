@@ -18,18 +18,16 @@ npm run build      # production build
 
 ## Before this goes live on the domain
 
-Everything a visitor can act on lives in `lib/site.ts`. Three values in there
-are placeholders and must be replaced — they are marked `NEEDS CONFIRMATION`:
+Everything a visitor can act on lives in `lib/site.ts`. The booking link and
+the founder name are confirmed. What is still outstanding is marked
+`NEEDS CONFIRMATION` in that file:
 
-| Value | Why it matters |
+| Value | Status |
 | --- | --- |
-| `bookingUrl` | Every call-to-action on the site points at it. A dead booking link is worse than no button. |
-| `founder.name` | Appears in the About page signature and in the JSON-LD. |
-| `legal.address`, `legal.companyNumber`, `legal.icoRegistration` | Referenced by the privacy policy. A UK business processing enquiry data generally needs an ICO registration. |
-
-`legal.companyNumber` and `legal.icoRegistration` are `null` by default and the
-privacy page simply omits those lines rather than printing a placeholder at a
-visitor.
+| `bookingUrl` | Confirmed — `https://cal.com/leonard-friedmann-qsliio`. Every call-to-action points at it. |
+| `founder.name` | Confirmed — Leonard Friedmann. |
+| `legal.address` | **Outstanding.** Printed in the privacy policy. |
+| `legal.companyNumber`, `legal.icoRegistration` | **Outstanding.** Both `null`, so the privacy policy omits those lines rather than printing a placeholder at a visitor. A UK business processing enquiry data generally needs an ICO registration. |
 
 The privacy policy and terms describe how this business actually intends to
 operate, but they have not been reviewed by a solicitor. Have them checked
